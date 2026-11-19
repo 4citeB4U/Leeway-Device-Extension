@@ -1,0 +1,35 @@
+# LEEWAY HEADER — DO NOT REMOVE
+# REGION: LEEWAY.DEVICE_EXTENSION.HOME.CI
+# TAG: LEEWAY.W01.EXTENSION.HOME.PR_CHECK.V1
+# 5WH:
+# WHAT = Verify that the user-facing extension product home remains accurate and source-only.
+# WHY = Prevent unsafe or misleading web preview releases.
+# WHO = Creator-authorized W01 contributor through GitHub Actions.
+# WHERE = .github/workflows/verify-home.yml.
+# WHEN = 2026-11-19.
+# HOW = Node built-in regression assertions and source syntax check in a read-only CI job.
+# LICENSE = Not asserted; existing repository terms apply.
+name: Extension Home Source Qualification
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'tests/home.test.mjs'
+      - '.github/workflows/verify-home.yml'
+permissions:
+  contents: read
+jobs:
+  home-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test source syntax
+        run: node --check tests/home.test.mjs
+      - name: Test truthful home preview
+        run: node --test tests/home.test.mjs
