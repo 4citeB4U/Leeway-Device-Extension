@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "LeeWay Universal Device Extension",
+  "short_name": "LeeWay",
+  "version": "0.3.0",
+  "description": "Owner-initiated browser courier for an enrolled LeeWay Device Bridge native host.",
+  "minimum_chrome_version": "116",
+  "action": { "default_title": "Open LeeWay" },
+  "permissions": ["activeTab", "scripting", "nativeMessaging"],
+  "background": { "service_worker": "background.js" }
+}
