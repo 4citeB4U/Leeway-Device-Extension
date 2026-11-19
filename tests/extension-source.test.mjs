@@ -36,3 +36,10 @@ test('does not impersonate a runtime or evidence authority', () => {
   assert.match(source, /NATIVE_HOST_NOT_AUTHENTICATED/);
   assert.doesNotMatch(source, /<all_urls>|localhost:43117|Access-Control-Allow-Origin/);
 });
+test('Safari native handler validates messages and fails closed until app forwarding is configured', () => {
+  const source = readFileSync(path.join(root, 'apple', 'SafariWebExtension', 'SafariWebExtensionHandler.swift'), 'utf8');
+  assert.match(source, /SFExtensionMessageKey/);
+  assert.match(source, /NATIVE_APP_AUTHENTICATION_REQUIRED/);
+  assert.match(source, /NATIVE_APP_FORWARDING_NOT_CONFIGURED/);
+  assert.doesNotMatch(source, /accepted": true/);
+});

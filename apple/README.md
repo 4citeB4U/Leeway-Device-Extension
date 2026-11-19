@@ -17,4 +17,6 @@ This folder is source for the Safari app-extension target. It is **not yet embed
 
 The Apple build owner must add a `Safari Web Extension` target, use bundle identity `industries.leeway.devicebridge.safari-extension`, copy the exact `extension/` assets into its WebExtension resource bundle, sign both the containing iPhone app and extension with the same approved Apple team, and run the iPhone enablement test in Settings → Safari → Extensions.
 
-iLoader may then sign/install the combined IPA. Until that Xcode integration, Apple signing, iPhone enablement, and native-host handshake are completed, this is `SOURCE_IMPLEMENTED`, not `INSTALLED` or `QUALIFIED`.
+`SafariWebExtensionHandler.swift` now accepts Safari native messages and returns a correlated response. It only marks a session authenticated after the containing app has written an unexpired `OWNER_AUTHENTICATED_RUNTIME_GRANTED` session into the declared App Group. It rejects excerpt forwarding until the containing app implements the existing Device Bridge forwarding route. This is intentionally fail-closed; the extension never invents a device-operation receipt.
+
+iLoader may then sign/install the combined IPA. Until that Xcode integration, Apple signing, iPhone enablement, app-group entitlement, authenticated app session, and native-host forwarding test are completed, this is `SOURCE_IMPLEMENTED`, not `INSTALLED` or `QUALIFIED`.
