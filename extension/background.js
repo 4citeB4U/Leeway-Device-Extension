@@ -121,7 +121,14 @@ LICENSE: Existing repository terms apply.
         reset('NATIVE_HELLO_SEND_FAILED');
       }
     });
-    return connectPromise;
+    // The constructor can reject synchronously before the assignment above.
+    // Clear settled attempts so a newly installed or restarted host can retry.
+    const thisAttempt = connectPromise;
+    void thisAttempt.then(
+      () => { if (connectPromise === thisAttempt) connectPromise = null; },
+      () => { if (connectPromise === thisAttempt) connectPromise = null; }
+    );
+    return thisAttempt;
   }
 
   function share(payload) {
