@@ -20,6 +20,14 @@ This is the **public product home** for the single LeeWay Universal Device Exten
 
 > **Current release status: NOT INSTALLED / NOT PRODUCTION-QUALIFIED.** This repository was originally empty. Its homepage and future packaging are not proof of a signed extension or native-host enrollment. **Do not install unsigned development artifacts as a trusted production client.**
 
+## Reconciled extension source candidate
+
+`extension/` now contains one **source candidate**: Device Bridge draft PR #121's fail-closed, explicit-user-action courier model combined with draft PR #120's deterministic package pattern. It uses the one current installer identity, `com.leewayindustries.device_bridge`; the conflicting `org.leeway.device_bridge` identifier is not shipped.
+
+It has no `host_permissions`, static content script, hidden collection, localhost command relay, or browser-side execution authority. The toolbar action explicitly injects a panel into a selected HTTP(S) tab; the panel can submit only owner-selected text after an enrolled native host completes its authenticated handshake.
+
+`apple/SafariWebExtension/` provides the Safari app-extension source. It must be embedded and signed by the canonical Device Bridge Apple Xcode project before iLoader can install the combined IPA.
+
 ## What users should experience
 
 | Experience | Required behavior |
@@ -32,9 +40,9 @@ This is the **public product home** for the single LeeWay Universal Device Exten
 
 **No contents of an owner's Digital Brain index are automatically copied to cloud storage.** Local files are included in backups only through separately authorized, encrypted Continuum policies. Every owner and every device must remain isolated.
 
-## Where the existing implementation lives
+## Where the original Device Bridge authority lives
 
-The extension's source is still under review in the **canonical Device Bridge**. Do not start a new browser implementation in this repository or copy the competing drafts without source-owner reconciliation.
+The original Device Bridge remains the native-device execution and passport owner. This product source does not create a second native host, Runtime Fabric, identity, recovery, or receipt authority.
 
 - [Device Bridge: current execution and passport authority](https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE)
 - [Extension Manifesto V2 candidate (draft PR #120)](https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE/pull/120) — MV3 candidate and unsigned browser-source packaging; not deployed
@@ -56,8 +64,8 @@ The extension's source is still under review in the **canonical Device Bridge**.
 
 ## Qualification gates
 
-1. Reconcile the existing extension drafts into one approved product source branch without replacing original Device Bridge/Runtime owners.
-2. Bind the signed Chrome/Edge package to an actually registered, owner-authorized native host.
+1. Review and adopt this reconciled source into the original Device Bridge release lineage without replacing Device Bridge/Runtime owners.
+2. Bind a signed Chrome/Edge package to an actually registered, owner-authorized native host.
 3. Demonstrate first onboarding and second-device enrollment on two physical target devices, with fresh device credentials.
 4. Demonstrate independently durable encrypted backup, wrong-user denial, revoked-device denial, loss of original devices, owner preview and authorized restore.
 5. Demonstrate one session across tablet and widget in a real app (Office reference), retaining state across disconnection.
