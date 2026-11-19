@@ -46,6 +46,14 @@ function setup(options = {}) {
       return port;
     }
   };
+  if (options.requestReply) {
+    runtime.sendNativeMessage = (name, payload, callback) => {
+      Promise.resolve().then(() => options.requestReply(name, payload)).then(
+        response => callback(response),
+        () => { runtime.lastError = {message: 'native request failed'}; callback(); runtime.lastError = undefined; }
+      );
+    };
+  }
   const chrome = {
     runtime,
     action: {onClicked: {addListener(fn) {actionListeners.push(fn);}}},
@@ -169,4 +177,25 @@ test('handshake transport error fails closed and does not produce a session',asy
 test('unknown native host fails without claiming connected',async()=>{
   const f=setup({failConnect:true});const result=await f.request('LEEWAY_CONNECT');
   assert.match(result.error,/NATIVE_HOST_UNAVAILABLE/);
+});
+test('Safari-compatible request-response native messaging uses one qualified session',async()=>{
+  const f=setup({requestReply(_name, message) {
+    if (message.type === 'leeway.extension.hello') return {
+      type:'leeway.extension.hello-ack', version:3, helloId:message.helloId,
+      authenticated:true, sessionId:'safari-session-00001', capabilities:['page.excerpt.submit']
+    };
+    return {type:'leeway.extension.receipt',requestId:message.requestId,sessionId:message.sessionId,accepted:true};
+  }});
+  const connected=await f.request('LEEWAY_CONNECT');
+  assert.equal(connected.ok,true);
+  assert.equal(f.ports.length,0);
+  const sent=await f.request('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'T',selection:'selected'});
+  assert.equal(sent.ok,true);
+  assert.equal(sent.result.authority,'NATIVE_HOST_ACK_NOT_VERITAS');
+});
+test('Safari-compatible native messaging fails closed without an authenticated reply',async()=>{
+  const f=setup({requestReply(_name, message) { return {type:'leeway.extension.hello-ack',version:3,helloId:message.helloId,authenticated:false,capabilities:[]}; }});
+  const result=await f.request('LEEWAY_CONNECT');
+  assert.equal(result.ok,false);
+  assert.match(result.error,/NATIVE_AUTHENTICATION_NOT_QUALIFIED/);
 });

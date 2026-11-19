@@ -25,11 +25,19 @@ LICENSE: Existing repository terms apply.
   const pending = new Map();
 
   const status = () => ({
-    connected: Boolean(port && sessionId),
+    connected: Boolean(sessionId),
     host: B.HOST,
     authority: 'NATIVE_HOST_ONLY',
     execution: 'NOT_ASSERTED'
   });
+
+  function qualifiedAck(message, expectedId) {
+    return message?.type === 'leeway.extension.hello-ack' &&
+      message.version === B.VERSION && message.helloId === expectedId &&
+      message.authenticated === true && typeof message.sessionId === 'string' &&
+      /^[A-Za-z0-9._:-]{8,128}$/.test(message.sessionId) &&
+      Array.isArray(message.capabilities) && message.capabilities.includes('page.excerpt.submit');
+  }
 
   function reset(reason = 'NATIVE_HOST_DISCONNECTED') {
     const oldPort = port;
@@ -51,8 +59,34 @@ LICENSE: Existing repository terms apply.
   }
 
   function connect() {
-    if (port && sessionId) return Promise.resolve(status());
+    if (sessionId) return Promise.resolve(status());
     if (connectPromise) return connectPromise;
+
+    // Safari on iOS communicates with its containing app through bounded
+    // request/response native messaging, not a durable Chromium-style port.
+    if (B.supportsNativeMessageRequestReply()) {
+      connectPromise = (async () => {
+        const expectedId = crypto.randomUUID();
+        let message;
+        try {
+          message = await B.call('runtime.sendNativeMessage', B.HOST, {
+            type: 'leeway.extension.hello', version: B.VERSION, helloId: expectedId,
+            requestedCapabilities: ['page.excerpt.submit']
+          });
+        } catch {
+          throw new Error('NATIVE_HOST_UNAVAILABLE');
+        }
+        if (!qualifiedAck(message, expectedId)) throw new Error('NATIVE_AUTHENTICATION_NOT_QUALIFIED');
+        sessionId = message.sessionId;
+        return status();
+      })();
+      const thisAttempt = connectPromise;
+      void thisAttempt.then(
+        () => { if (connectPromise === thisAttempt) connectPromise = null; },
+        () => { if (connectPromise === thisAttempt) { sessionId = null; connectPromise = null; } }
+      );
+      return thisAttempt;
+    }
 
     // A nonce is only a correlation guard. The native host must independently
     // verify the owner identity, device passport and Runtime grants.
@@ -79,11 +113,7 @@ LICENSE: Existing repository terms apply.
         if (port !== candidate) return;
         if (message?.type === 'leeway.extension.hello-ack') {
           if (sessionId) return;
-          if (message.version !== B.VERSION || message.helloId !== expectedId ||
-            message.authenticated !== true || typeof message.sessionId !== 'string' ||
-            !/^[A-Za-z0-9._:-]{8,128}$/.test(message.sessionId) ||
-            !Array.isArray(message.capabilities) ||
-            !message.capabilities.includes('page.excerpt.submit')) {
+          if (!qualifiedAck(message, expectedId)) {
             reset('NATIVE_AUTHENTICATION_NOT_QUALIFIED');
             return;
           }
@@ -132,11 +162,23 @@ LICENSE: Existing repository terms apply.
   }
 
   function share(payload) {
-    if (!port || !sessionId) return Promise.reject(new Error('NATIVE_HOST_NOT_AUTHENTICATED'));
+    if (!sessionId) return Promise.reject(new Error('NATIVE_HOST_NOT_AUTHENTICATED'));
     let safe;
     try { safe = B.excerpt(payload); }
     catch (error) { return Promise.reject(error); }
     const requestId = crypto.randomUUID();
+    if (!port && B.supportsNativeMessageRequestReply()) {
+      return B.call('runtime.sendNativeMessage', B.HOST, {
+        type: 'leeway.extension.page-excerpt', version: B.VERSION, requestId,
+        sessionId, excerpt: safe
+      }).then(message => {
+        if (message?.type !== 'leeway.extension.receipt' || message.requestId !== requestId ||
+          message.sessionId !== sessionId) throw new Error('NATIVE_RECEIPT_NOT_QUALIFIED');
+        if (message.accepted !== true) throw new Error('NATIVE_REQUEST_REJECTED');
+        return { acknowledged: true, authority: 'NATIVE_HOST_ACK_NOT_VERITAS' };
+      }, () => { throw new Error('NATIVE_EXCERPT_SEND_FAILED'); });
+    }
+    if (!port) return Promise.reject(new Error('NATIVE_HOST_NOT_AUTHENTICATED'));
     const candidate = port;
     const currentSession = sessionId;
     return new Promise((resolve, reject) => {

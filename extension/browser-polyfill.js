@@ -35,5 +35,8 @@ LICENSE: Existing repository terms apply.
     if (promiseApi) return Promise.resolve().then(() => fn(...args));
     return new Promise((resolve, reject) => fn(...args, result => api.runtime?.lastError ? reject(new Error(api.runtime.lastError.message)) : resolve(result)));
   }
-  scope.LeeWayExtension = Object.freeze({ VERSION, HOST, api, allowedPage, excerpt, call });
+  function supportsNativeMessageRequestReply() {
+    return typeof api?.runtime?.sendNativeMessage === 'function';
+  }
+  scope.LeeWayExtension = Object.freeze({ VERSION, HOST, api, allowedPage, excerpt, call, supportsNativeMessageRequestReply });
 })(globalThis);
