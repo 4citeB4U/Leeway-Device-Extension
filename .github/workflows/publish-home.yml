@@ -1,0 +1,50 @@
+# LEEWAY HEADER — DO NOT REMOVE
+# REGION: LEEWAY.DEVICE_EXTENSION.HOME.PUBLISH
+# TAG: LEEWAY.W01.UNIVERSAL_EXTENSION.GITHUB_PAGES.V1
+# 5WH:
+# WHAT = Publish the reviewed static product homepage from the dedicated extension repository.
+# WHY = Give one discoverable public URL without requiring a live native Device Bridge host.
+# WHO = Approved GitHub Actions source publishing identity; Creator controls repository Pages settings.
+# WHERE = .github/workflows/publish-home.yml.
+# WHEN = 2026-11-19.
+# HOW = Run source checks, upload only docs/ as static site and deploy to repository GitHub Pages.
+# LICENSE = Not asserted; current repository terms apply.
+name: Publish LeeWay Extension Home
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'tests/home.test.mjs'
+      - '.github/workflows/publish-home.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: leeway-extension-pages
+  cancel-in-progress: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate website without external services
+        run: node --test tests/home.test.mjs
+      - name: Configure existing Pages site
+        uses: actions/configure-pages@v5
+      - name: Upload static HTML only
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+      - name: Deploy review-approved static site
+        id: deployment
+        uses: actions/deploy-pages@v4
