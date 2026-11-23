@@ -75,7 +75,7 @@ test('shortcuts are HTTPS-only and bounded; no automatic device permissions',()=
  {name:'Creds',url:'https://username:secret@example.com'},
  {name:'Two',url:'https://example.com/b'}]);
  assert.equal(shortcuts.length,2);
- assert.deepEqual(shortcuts.map(x=>x.name),['One','Two']);
+ assert.deepEqual(Array.from(shortcuts,x=>x.name),['One','Two']);
  assert.equal(P.safeShortcuts(Array.from({length:50},(_,i)=>({name:'App '+i,url:'https://example.com/'+i}))).length,24);
 });
 
