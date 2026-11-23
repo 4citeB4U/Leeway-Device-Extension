@@ -37,6 +37,8 @@ jobs:
           node --check extension/content-courier.js
           node --check extension/floating-tablet.js
           node --check extension/operating-policy.js
+          node --check extension/service-retry.js
+          node --check tests/service-retry.test.mjs
           node --check extension/operating-system.js
           node --check provisioning/tenant-install-plan.mjs
           node --check tests/native-handshake.test.mjs
