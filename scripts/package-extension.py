@@ -21,7 +21,7 @@ source, dist = root / 'extension', root / 'dist'
 dist.mkdir(exist_ok=True)
 files = [
     'browser-polyfill.js', 'background.js', 'content-courier.js',
-    'floating-tablet.js', 'operating-policy.js',
+    'floating-tablet.js', 'operating-policy.js', 'service-retry.js',
     'operating-system.html', 'operating-system.css', 'operating-system.js'
 ]
 assert all((source / name).is_file() for name in files)
