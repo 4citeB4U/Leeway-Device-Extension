@@ -126,7 +126,17 @@ async function checkBridge(){
  try{
   const url=policy.bridgeHealthUrl(profile.bridgeHealthUrl);
   await permitOrigin(url);
-  const body=await boundedPublicJson(url);
+  const body=await policyCheck();
+  async function policyCheck(){
+   if(!scope.LeeWayServiceRetry?.retryPublicHealth)
+    throw Error('BOUNDED_HEALTH_RETRY_UNAVAILABLE');
+   return scope.LeeWayServiceRetry.retryPublicHealth(
+    ()=>boundedPublicJson(url,15000),
+    {onRetry:({nextAttempt})=>{
+      $('bridgeStatus').textContent='Service warming or transiently unavailable · retry '+nextAttempt+'/3';
+    }}
+   );
+  }
   if(body?.service!=='leeway-managed-device-mcp'||!['RUNNING','BOUND'].includes(body?.status))
     throw Error('MANAGED_BRIDGE_CONTRACT_UNVERIFIED');
   $('bridgeStatus').textContent='Public cloud '+body.status+' · owner discovery and devices not verified here';
