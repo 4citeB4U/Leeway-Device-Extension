@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "LeeWay Operating System",
+  "short_name": "LeeWay OS",
+  "version": "0.4.0",
+  "description": "Browser sidebar to the cloud-hosted LeeWay Operating System Tablet with optional owner-enrolled native host.",
+  "action": {
+    "default_title": "LeeWay Operating System"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "nativeMessaging",
+    "storage"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "sidebar_action": {
+    "default_title": "LeeWay Operating System",
+    "default_panel": "operating-system.html"
+  },
+  "background": {
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://4citeb4u.github.io;"
+  }
+}
