@@ -37,9 +37,12 @@ function httpsUrl(input){
   if(typeof input!=='string'||input.length>2048)throw Error('HTTPS_RESOURCE_INVALID');
   let url;
   try{url=new URL(input)}catch{throw Error('HTTPS_RESOURCE_INVALID')}
-  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||!url.hostname.includes('.')||
-      url.hostname==='localhost'||url.hostname.endsWith('.localhost'))
-      throw Error('HTTPS_RESOURCE_INVALID');
+  const h=url.hostname.toLowerCase();
+  const privateHost=h==='localhost'||h.endsWith('.localhost')||h.endsWith('.local')||
+    h==='[::1]'||h==='0.0.0.0'||/^127\./.test(h)||
+    /^(10|192\.168|169\.254)\./.test(h)||/^172\.(1[6-9]|2[0-9]|3[01])\./.test(h);
+  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||
+    !h.includes('.')||privateHost)throw Error('HTTPS_RESOURCE_INVALID');
   return url.href;
 }
 function bridgeHealthUrl(input){
