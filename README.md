@@ -20,6 +20,22 @@ This is the **public product home** for the single LeeWay Universal Device Exten
 
 > **Current release status: NOT INSTALLED / NOT PRODUCTION-QUALIFIED.** This repository was originally empty. Its homepage and future packaging are not proof of a signed extension or native-host enrollment. **Do not install unsigned development artifacts as a trusted production client.**
 
+## LeeWay Operating System sidebar candidate (November 23, 2026)
+
+The Creator-authorized product name for the new right-hand button is **LeeWay Operating System**. This is a stacked source continuation on the existing native-handshake PR #3, not a replacement Device Bridge or a second Tablet.
+
+- `extension/operating-system.html` + `operating-system.js/css`: responsive right-side application launcher, public cloud Bridge health check, existing hosted Tablet link and preview, personal HTTPS shortcuts, optional enrolled native host courier.
+- `extension/operating-policy.js`: four-family OS labels, safe public tenant endpoints and employee export **LOCKED** pending signed Creator license plus Runtime admission.
+- `extension/manifest.json`: Chromium MV3 right-side `side_panel`. `extension/manifest.firefox.json`: Firefox MV3 `sidebar_action` plus event-page background. Neither grants ambient website access; exact public health/GitHub origins need direct user approval.
+- `provisioning/tenant-install-plan.mjs`: reproducible **source-only** customer-owned GitHub/Render installation checklist. It rejects Creator impersonation, tokens and private setup duplication, and never provisions paid resources.
+- `scripts/package-extension.py`: deterministic, **unsigned** Chromium/Firefox source candidates with SHA-256 checksums; not signed, store-published or production-installed.
+
+Full architectural and acceptance boundaries: [LeeWay Operating System universal instance V1](docs/LEEWAY-OPERATING-SYSTEM-UNIVERSAL-INSTANCE-V1.md).
+
+The **Creator instance is not a public account template**. Customers must use their own authenticated GitHub and free hosting account, tenant-specific owner identity and Continuum custody. GitHub source recovery does not restore private data by itself. Outbound digital employee deployment requires a revocable Creator-issued, Runtime-enforced license; the browser can never issue one.
+
+**Status:** `SOURCE_IMPLEMENTED` once checked into the review branch; source CI, browser install, GitHub OAuth, customer instance provisioner, native OS adapters, full-device-loss recovery and Veritas-qualified deployment are separate gates.
+
 ## Reconciled extension source candidate
 
 `extension/` now contains one **source candidate**: Device Bridge draft PR #121's fail-closed, explicit-user-action courier model combined with draft PR #120's deterministic package pattern. It uses the one current installer identity, `com.leewayindustries.device_bridge`; the conflicting `org.leeway.device_bridge` identifier is not shipped.
