@@ -1,14 +1,14 @@
 /*
 LEEWAY HEADER — DO NOT REMOVE
 REGION: LEEWAY.DEVICE_EXTENSION.BROWSER
-TAG: LEEWAY.UNIVERSAL_EXTENSION.COURIER.V2
+TAG: LEEWAY.UNIVERSAL_EXTENSION.COURIER.SIDEBAR.V3
 5WH:
-WHAT: Bind user-initiated browser communication to one correlated native-host handshake and scoped excerpt submission.
+WHAT: Preserve correlated native-host courier while exposing one owner-activated LeeWay Operating System side panel.
 WHY: Reject stale or unsolicited host acknowledgments, concurrent connect races and silent transport failures.
 WHO: Creator-authorized LeeWay Device Extension contributors; original Device Bridge and Runtime remain the only authority.
 WHERE: extension/background.js in 4citeB4U/Leeway-Device-Extension.
 WHEN: 2026-11-19.
-HOW: Promise single-flight, challenge correlation, fail-closed disconnect and bounded request acknowledgment.
+HOW: Preserve single-flight native handshake, accept only exact extension-panel messages and open Chromium side panel on action click.
 LICENSE: Existing repository terms apply.
 */
 (function (scope) {
@@ -162,16 +162,34 @@ LICENSE: Existing repository terms apply.
     });
   }
 
-  function trusted(sender, payload) {
-    if (sender?.id !== B.api.runtime.id || !B.allowedPage(sender?.tab?.url)) return false;
+  function trusted(sender, request) {
+    if (sender?.id !== B.api.runtime.id) return false;
+    // The extension's own sidebar can connect its optional native host, but
+    // it cannot submit content excerpts without a selected HTTP(S) page.
+    const panelUrl = B.api.runtime.getURL?.('operating-system.html');
+    if (panelUrl && sender?.url === panelUrl &&
+      ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_DISCONNECT','LEEWAY_OPEN_COURIER'].includes(request?.type))
+      return true;
+    if (!B.allowedPage(sender?.tab?.url)) return false;
     try {
-      return !payload?.href ||
-        new URL(payload.href).origin === new URL(sender.tab.url).origin;
+      return !request?.payload?.href ||
+        new URL(request.payload.href).origin === new URL(sender.tab.url).origin;
     } catch { return false; }
+  }
+  async function openCourier(){
+    const tabs = await B.call('tabs.query',{active:true,currentWindow:true});
+    const tab = Array.isArray(tabs)?tabs[0]:null;
+    if (!Number.isInteger(tab?.id) || !B.allowedPage(tab?.url))
+      throw Error('COURIER_ACTIVE_PAGE_REQUIRED');
+    await B.call('scripting.executeScript',{
+      target:{tabId:tab.id},
+      files:['browser-polyfill.js','content-courier.js','floating-tablet.js']
+    });
+    return {opened:true,authority:'USER_ACTIVATED_COURIER_ONLY'};
   }
 
   B.api.runtime.onMessage.addListener((request, sender, respond) => {
-    if (!request || !trusted(sender, request.payload)) return false;
+    if (!request || !trusted(sender, request)) return false;
     const job = request.type === 'LEEWAY_STATUS'
       ? Promise.resolve(status())
       : request.type === 'LEEWAY_CONNECT'
@@ -180,14 +198,26 @@ LICENSE: Existing repository terms apply.
           ? Promise.resolve().then(() => { reset(); return status(); })
           : request.type === 'LEEWAY_SHARE_SELECTION'
             ? share(request.payload)
-            : null;
+            : request.type === 'LEEWAY_OPEN_COURIER'
+              ? openCourier()
+              : null;
     if (!job) return false;
     job.then(result => respond({ ok: true, result }),
       error => respond({ ok: false, error: String(error?.message || error).slice(0, 256) }));
     return true;
   });
 
+  let panelReady = false;
+  if (B.api.sidePanel?.setPanelBehavior) {
+    try {
+      const setting = B.api.sidePanel.setPanelBehavior({openPanelOnActionClick:true});
+      if (setting?.then) void setting.then(()=>{panelReady=true;},()=>{panelReady=false;});
+    } catch { panelReady=false; }
+  }
   B.api.action.onClicked.addListener(tab => {
+    // On Chromium, toolbar action opens the OS sidebar; preserve the older
+    // explicit native courier click only on browsers without that ability.
+    if (panelReady) return;
     if (Number.isInteger(tab?.id) && B.allowedPage(tab.url)) {
       void B.call('scripting.executeScript', {
         target: { tabId: tab.id },
