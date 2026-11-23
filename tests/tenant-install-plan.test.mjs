@@ -29,6 +29,11 @@ test('personal customer owns service resources while retaining Creator licensing
  assert.equal(plan.capabilities.adapters.length,4);
  assert.ok(plan.services.every(s=>s.state!=='DEPLOYED'&&s.state!=='READY'));
  assert.equal(plan.recovery.allDevicesLostRestore,'NOT_QUALIFIED');
+ assert.equal(plan.recovery.continuumAuthorityRef,'leeway.continuum');
+ assert.equal(plan.recovery.githubRole,'CUSTOMER_OWNED_PROJECT_RECOVERY_ANCHOR_NOT_LIVE_DATABASE');
+ assert.deepEqual(plan.recovery.logicalCompartments,['runtime-state','evidence-vault','memory','learning']);
+ assert.equal(plan.recovery.formulaCodec,'EXACT_LOSSLESS_AND_SHA256_READBACK_REQUIRED');
+ assert.equal(plan.recovery.githubCheckpointPolicy,'VERSIONED_GOVERNED_ENCRYPTED_SNAPSHOTS_NOT_PER_WRITE');
  assert.doesNotMatch(JSON.stringify(plan),/397621082842543343|token_secret|private\.pem|LEEWAY_MCP_OWNER_SUB/);
 });
 test('industrial services do not inherit Creator workforce export privilege',()=>{
