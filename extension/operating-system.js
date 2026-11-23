@@ -53,7 +53,7 @@ async function permitOrigin(url){
         api.runtime?.lastError?reject(Error('BROWSER_PERMISSION_REJECTED')):resolve(given)));
   if(!result)throw Error('ORIGIN_ACCESS_NOT_APPROVED');
 }
-async function boundedPublicJson(url){
+async function boundedPublicJson(url,timeoutMs=8000){
   const response=await fetch(url,{method:'GET',redirect:'error',cache:'no-store',credentials:'omit',
     headers:{accept:'application/json'},signal:AbortSignal.timeout(8000)});
   if(!response.ok)throw Error('PUBLIC_ENDPOINT_HTTP_'+response.status);
