@@ -79,6 +79,19 @@ Customer workflow, with the **owner** authenticating to each provider:
 
 The Creator can remotely revoke or change a **leased employee capability** via Runtime-verified license state and an independently auditable receipt, even when the employee is reached from an extension. This capability is **NOT IMPLEMENTED** by a static client flag. Fail closed on unknown, revoked, expired or offline license state for outbound employee operations. Personal locally designed employees may remain local under their user's own lawful data control.
 
+## Creator amendment: GitHub is each project's recovery anchor; Continuum is the operating data authority
+
+The onboarding experience must be **GitHub login → customer-owned GitHub project created and read back → customer's named LeeWay Tablet opens immediately**. Additional projects use distinct GitHub repositories and Continuum project scopes. They do not wait for optional Free hosting, physical device admission or licensed employee export before receiving their baseline Tablet. Actual private GitHub authentication and this direct Tablet route remain independent production integration gates.
+
+The GitHub repository serves as the durable, customer-owned **recovery anchor** for the project bootstrap manifest, approved source/release references, and *occasional governed encrypted Continuum checkpoints*. It is **not** Continuum's continuously updated database, an extension-owned live archive or a guaranteed 10 GiB hard drive for every project. Git LFS/storage usage is subject to the account's actual quota and provider limits.
+
+The **existing** Continuum authority `leeway.continuum` owns durable canonical state and routing between its four logical cells:
+`runtime-state`, `evidence-vault`, `memory` and `learning`. Its storage topology retains core SQLite, optional derived DuckDB, optional offline PouchDB and optional Electric/PostgreSQL synchronization; object/archive provider compartments are subordinate replaceable resources, not new independent authorities.
+
+All recoverable snapshots must pass the **original LeeWay Formula exact lossless codec** and byte-exact SHA-256 reconstruction, with owner-controlled encryption, original Continuum admission, GitHub release or other approved archive transport, readback, and separate original Veritas/Receipt custody. Condensed/lossy Formula projections are allowed for derived analysis but **cannot replace recoverable originals**. No app directly writes authoritative live records to GitHub.
+
+Sources: `4citeB4U/LeeWay-Continuum/config/storage-topology.candidate.json`, `docs/storage/PER-PERSON-CONTINUUM-MULTIDATABASE-CONTRACT.md`, `src/identity/continuum-account-binding.mjs`, and `4citeB4U/Leeway-formula-live/runtime/canonical/leeway-formula/experimental-v2/continuum-exact-store-boundary.mjs`. Runtime candidate [PR #198](https://github.com/4citeB4U/Leeway-Runtime-Fabric/pull/198) owns the user-project creation step; Continuum candidate [PR #18](https://github.com/4citeB4U/LeeWay-Continuum/pull/18) owns a source-only recovery checkpoint handoff.
+
 ## Recovery and loss of every device
 
 GitHub restores versioned public source, signed release references, starter applications and authorized nonsecret configuration. It is **not** the canonical private Continuum storage or encryption-key escrow. To recover the full user's state after every device is lost, separately prove:
