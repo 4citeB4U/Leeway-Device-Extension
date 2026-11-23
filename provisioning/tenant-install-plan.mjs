@@ -73,6 +73,13 @@ export function createTenantInstallPlan(input){
     },
     recovery:{
       githubSource:'PUBLIC_SOURCE_OR_OWNER_AUTHENTICATED_PRIVATE_REPOSITORY',
+      githubRole:'CUSTOMER_OWNED_PROJECT_RECOVERY_ANCHOR_NOT_LIVE_DATABASE',
+      projectManifest:'leeway.project.json',
+      continuumAuthorityRef:'leeway.continuum',
+      logicalCompartments:['runtime-state','evidence-vault','memory','learning'],
+      databaseAuthority:'CANONICAL_CONTINUUM_ONLY',
+      formulaCodec:'EXACT_LOSSLESS_AND_SHA256_READBACK_REQUIRED',
+      githubCheckpointPolicy:'VERSIONED_GOVERNED_ENCRYPTED_SNAPSHOTS_NOT_PER_WRITE',
       encryptedContinuum:'NOT_PROVISIONED',
       keyCustody:'NOT_PROVEN',
       allDevicesLostRestore:'NOT_QUALIFIED'
