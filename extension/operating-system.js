@@ -55,7 +55,7 @@ async function permitOrigin(url){
 }
 async function boundedPublicJson(url,timeoutMs=8000){
   const response=await fetch(url,{method:'GET',redirect:'error',cache:'no-store',credentials:'omit',
-    headers:{accept:'application/json'},signal:AbortSignal.timeout(8000)});
+    headers:{accept:'application/json'},signal:AbortSignal.timeout(timeoutMs)});
   if(!response.ok)throw Error('PUBLIC_ENDPOINT_HTTP_'+response.status);
   const n=Number(response.headers.get('content-length')||0);
   if(n>16384)throw Error('PUBLIC_RESPONSE_TOO_LARGE');
