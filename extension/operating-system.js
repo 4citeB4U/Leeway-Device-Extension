@@ -176,6 +176,15 @@ $('previewTablet').addEventListener('click',()=>{
 $('checkBridge').addEventListener('click',()=>void checkBridge());
 $('checkGitHub').addEventListener('click',()=>void checkGitHub());
 $('connectNative').addEventListener('click',()=>void connectNative());
+$('openCourier').addEventListener('click',async()=>{
+ try{
+  if(!api?.runtime?.sendMessage)throw Error('COURIER_BROWSER_API_UNAVAILABLE');
+  const res=await (promiseApi?api.runtime.sendMessage({type:'LEEWAY_OPEN_COURIER'}):
+    new Promise((resolve,reject)=>api.runtime.sendMessage({type:'LEEWAY_OPEN_COURIER'},v=>
+      api.runtime?.lastError?reject(Error('EXTENSION_MESSAGE_REJECTED')):resolve(v))));
+  announce(res?.ok?'Page courier opened by explicit request':'Courier: '+String(res?.error||'not authorized'));
+ }catch(err){announce('Courier unavailable: '+String(err.message||err).slice(0,90))}
+});
 $('openGitHub').addEventListener('click',()=>external('https://github.com/signup'));
 $('forkExtension').addEventListener('click',()=>external('https://github.com/4citeB4U/Leeway-Device-Extension/fork'));
 $('openRender').addEventListener('click',()=>external('https://dashboard.render.com/'));
