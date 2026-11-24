@@ -21,7 +21,7 @@ const read = name => readFileSync(path.join(root, 'extension', name), 'utf8');
 const manifest = JSON.parse(read('manifest.json'));
 test('uses explicit user activation and no ambient website permissions', () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'nativeMessaging', 'scripting', 'sidePanel']);
+  assert.deepEqual(manifest.permissions.sort(), ['nativeMessaging', 'sidePanel']);
   assert.equal(manifest.optional_host_permissions, undefined);
   assert.equal(manifest.side_panel.default_path, 'operating-system.html');
   assert.equal(manifest.name, 'LeeWay Device Bridge');
@@ -35,7 +35,7 @@ test('uses one reconciled native-host identity', () => {
 });
 test('does not impersonate a runtime or evidence authority', () => {
   const source = read('background.js');
-  assert.match(source, /NATIVE_HOST_ACK_NOT_VERITAS/);
+  assert.match(source, /BRIDGE_RUNTIME_READBACK_TIMEOUT/);
   assert.match(source, /NATIVE_HOST_NOT_AUTHENTICATED/);
   assert.doesNotMatch(source, /<all_urls>|localhost:43117|Access-Control-Allow-Origin/);
 });
@@ -84,5 +84,7 @@ test('release cannot bypass canonical native Bridge snapshot or launch the publi
  assert.match(controller,/NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED/);
  assert.doesNotMatch(controller,/profile\.tabletUrl|bridgeHealthUrl|public.*preview/i);
  assert.match(packager,/bridge-session-contract\.js/);
+ assert.doesNotMatch(packager,/\'content-courier\.js\',\'floating-tablet\.js\'/);
+ assert.doesNotMatch(background,/LEEWAY_SHARE_SELECTION|LEEWAY_OPEN_COURIER|scripting\.executeScript/);
  assert.doesNotMatch(packager,/\'operating-policy\.js\',\'service-retry\.js\'/);
 });
