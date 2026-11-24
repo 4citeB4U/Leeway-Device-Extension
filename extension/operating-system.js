@@ -122,7 +122,7 @@ function renderProfile(){
  $('instanceLabel').textContent=profile.instanceLabel;
  $('instanceState').textContent='Customer Starter · Not enrolled';
  const form=$('profileForm');
- for(const key of ['instanceLabel','githubRepo','tabletUrl','bridgeHealthUrl'])form.elements.namedItem(key).value=profile[key];
+ for(const key of ['instanceLabel','githubRepo','tabletUrl','bridgeHealthUrl'])form.elements.namedItem(key).value=profile[key]||'';
  $('bridgeStatus').textContent='Not checked';
  $('githubStatus').textContent='Not checked; public metadata only';
 }
@@ -133,6 +133,7 @@ function selectView(name){
 async function checkBridge(){
  $('bridgeStatus').textContent='Checking public health…';
  try{
+  if(!profile.bridgeHealthUrl)throw Error('CUSTOMER_BRIDGE_NOT_ENROLLED');
   const url=policy.bridgeHealthUrl(profile.bridgeHealthUrl);
   await permitOrigin(url);
   const body=await policyCheck();
@@ -154,6 +155,7 @@ async function checkBridge(){
 async function checkGitHub(){
  $('githubStatus').textContent='Checking public source…';
  try{
+  if(!profile.githubRepo)throw Error('CUSTOMER_GITHUB_NOT_ENROLLED');
   const repo=policy.parseGitHubRepo(profile.githubRepo);
   await permitOrigin(repo.api);
   const data=await boundedPublicJson(repo.api);
