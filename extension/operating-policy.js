@@ -20,7 +20,7 @@ const DEFAULTS=Object.freeze({
   githubRepo:null,
   tabletUrl:null,
   bridgeHealthUrl:null,
-  recoveryInfo:'https://github.com/4citeB4U/LeeWay-Continuum'
+  recoveryInfo:null
 });
 const OS_FAMILIES=Object.freeze(['Microsoft Windows','Linux','Apple','Android']);
 // This public customer edition is a MINIMAL CLIENT, not the Creator Golden Master.
