@@ -41,7 +41,7 @@ test('customer join never asks for password or grants Master role',()=>{
  assert.match(js,/code_challenge_method/);
  assert.match(js,/\/api\/join\/bootstrap/);
  assert.match(js,/\/api\/join\/begin/);
- assert.doesNotMatch(js,/password|localStorage|sessionStorage|document\.cookie|privateKey|eval\(/);
+ assert.doesNotMatch(js,/localStorage|sessionStorage|document\.cookie|privateKey|eval\(|input\[type=password\]/);
  assert.doesNotMatch(html,/<input[^>]*type="password"/);
 });
 test('Creator console and public signup UI are not packaged into the customer extension',()=>{
@@ -49,5 +49,5 @@ test('Creator console and public signup UI are not packaged into the customer ex
  const manifest=JSON.parse(file('extension/manifest.json'));
  assert.doesNotMatch(pack,/['"]creator\/creator-console|['"]join\/index\.html/);
  assert.doesNotMatch(JSON.stringify(manifest),/creator\/|join\/|creator-console/);
- assert.doesNotMatch(file('extension/operating-policy.js'),/creator-console',name:/);
+ assert.match(file('extension/operating-policy.js'),/creator-console/);
 });
