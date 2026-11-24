@@ -51,19 +51,22 @@ function classifyDevice(env,selection={}){
   packageArchitecture:'NATIVE_ADAPTER_MUST_DETECT_ARCHITECTURE_AND_ABI'
  });
 }
-function planOnboarding({environment,form,linuxDistribution,account,github,browsers=[],catalog,setupPolicy}={}){
+function planOnboarding({environment,form,linuxDistribution,deviceRelation,account,github,browsers=[],catalog,setupPolicy}={}){
+ if(!['first','additional'].includes(deviceRelation))fail('DEVICE_RELATION_REQUIRED');
  if(!['existing','new'].includes(account))fail('ACCOUNT_CHOICE_REQUIRED');
+ if(deviceRelation==='additional'&&account==='new')fail('NEW_ACCOUNT_CANNOT_BE_ADDITIONAL_DEVICE');
  if(!['yes','no'].includes(github))fail('GITHUB_CHOICE_REQUIRED');
  if(!setupPolicy||typeof setupPolicy.planSetup!=='function')fail('ORIGINAL_SETUP_POLICY_REQUIRED');
  const profile=classifyDevice(environment,{form,linuxDistribution});
  const nativeEnv={...environment,form:profile.form};
  const install=setupPolicy.planSetup(nativeEnv,browsers,catalog);
- const first=account==='new';
+ const first=deviceRelation==='first';
+ const needsSignup=account==='new';
  const sequence=[
   {id:'disclosure',label:steps.disclosure,status:'USER_REVIEW_REQUIRED'},
-  {id:'account',label:first?'Register a new LeeWay identity with Zitadel':'Sign in to your existing LeeWay account with Zitadel',
+  {id:'account',label:needsSignup?'Register a new LeeWay identity with Zitadel':'Sign in to your existing LeeWay account with Zitadel',
     status:'AUTHENTICATED_RUNTIME_REQUIRED',
-    detail:first?'Identity provider account verification and account approval required before protected download.':
+    detail:needsSignup?'Identity provider account verification and account approval required before protected download.':
       'Existing owner signs in again; no previous device password, recovery phrase or private key is copied.'},
   {id:'github',label:github==='yes'?'Connect your existing GitHub account':'Create your GitHub account at GitHub, then return to connect it',
     status:github==='yes'?'GITHUB_OAUTH_CONSENT_REQUIRED':'GITHUB_USER_SIGNUP_REQUIRED',
@@ -76,14 +79,14 @@ function planOnboarding({environment,form,linuxDistribution,account,github,brows
     status:a.state,channel:a.channel||null,browser:a.browser||null,detail:a.reason
   })),
   {id:'enroll',label:steps.enroll,status:'OWNER_DEVICE_CONSENT_AND_SIGNER_REQUIRED',
-    detail:first?'Enroll the first device only after real Zitadel authentication and per-device user approval.':
+    detail:first?'Complete full onboarding of this device after real Zitadel authentication and per-device user approval.':
       'Approve this NEW device with fresh owner sign-in and a trusted existing-device or recovery challenge; never transfer another device passport.'},
   {id:'restore',label:steps.restore,status:'PHYSICAL_DEVICE_AND_RUNTIME_READBACK_REQUIRED'}
  ];
  return Object.freeze({
   schema:'leeway.device-bridge.onboarding-plan.v1',
   ownerType:'ISSUER_DECIDES_CREATOR_OR_USER',
-  path:first?'FIRST_DEVICE':'ADDITIONAL_DEVICE',
+  path:first?'FULL_DEVICE_SETUP':'ADDITIONAL_DEVICE_QUICK_SETUP',
   profile,github,selectedBrowsers:Object.freeze([...browsers]),
   steps:Object.freeze(sequence.map(x=>Object.freeze(x))),
   installer:install,
