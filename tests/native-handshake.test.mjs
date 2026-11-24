@@ -23,6 +23,7 @@ function setup(options = {}) {
   const runtimeListeners = [];
   const actionListeners = [];
   const scripting = [];
+  const openedTabs = [];
   let disconnects = 0;
   const runtime = {
     id: 'test-extension-id',
@@ -50,6 +51,7 @@ function setup(options = {}) {
   const chrome = {
     runtime,
     action: {onClicked: {addListener(fn) {actionListeners.push(fn);}}},
+    tabs: {create(config,cb){ openedTabs.push(config); cb?.({id:99}); }},
     scripting: {executeScript(request, cb) {scripting.push(request); cb?.();}}
   };
   const scope = {chrome, crypto: {randomUUID}, URL, setTimeout, clearTimeout};
@@ -77,7 +79,7 @@ function setup(options = {}) {
     if(response===undefined)throw Error('PANEL_RESPONSE_NOT_SETTLED');
     return response;
   }
-  return {ports,request,schedule,panelRequest, actionListeners,scripting, getDisconnects:()=>disconnects};
+  return {ports,request,schedule,panelRequest, actionListeners,scripting,openedTabs,getDisconnects:()=>disconnects};
 }
 
 const ownerAck = (port, changes={})=>({
@@ -97,13 +99,14 @@ async function openSession(f) {
   return p;
 }
 
-test('toolbar activation injects only after deliberate click on allowed URL',()=>{
+test('Chrome/Edge toolbar opens the original Bridge extension display without webpage injection',async()=>{
   const f=setup();
   f.actionListeners[0]({id:7,url:'https://example.test'});
   f.actionListeners[0]({id:8,url:'chrome://extensions'});
-  assert.equal(f.scripting.length,1);
-  assert.equal(f.scripting[0].target.tabId,7);
-  assert.equal(f.scripting[0].files[2],'floating-tablet.js');
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(f.scripting.length,0);
+  assert.equal(f.openedTabs.length,2);
+  assert.equal(f.openedTabs[0].url,'chrome-extension://test-extension-id/operating-system.html');
 });
 test('matching challenge allows only an acknowledged native session',async()=>{
   const f=setup();await openSession(f);
