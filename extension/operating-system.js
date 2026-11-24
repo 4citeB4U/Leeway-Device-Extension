@@ -199,7 +199,8 @@ $('openCourier').addEventListener('click',async()=>{
 });
 $('openGitHub').addEventListener('click',()=>external('https://github.com/signup'));
 $('openRender').addEventListener('click',()=>external('https://dashboard.render.com/'));
-$('openRecovery').addEventListener('click',()=>external(policy.DEFAULTS.recoveryInfo));
+$('openRecovery').addEventListener('click',()=>profile.githubRepo?
+ external(profile.githubRepo):announce('Your recovery project is not enrolled yet.'));
 $('profileForm').addEventListener('submit',async event=>{
  event.preventDefault();
  const values=Object.fromEntries(new FormData(event.currentTarget).entries());
