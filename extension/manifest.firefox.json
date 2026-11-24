@@ -14,8 +14,6 @@
     }
   },
   "permissions": [
-    "activeTab",
-    "scripting",
     "nativeMessaging"
   ],
   "sidebar_action": {
