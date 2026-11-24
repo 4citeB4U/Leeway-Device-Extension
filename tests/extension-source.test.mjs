@@ -51,3 +51,19 @@ test('customer package never bundles a Creator Tablet entry or digital employee 
  assert.doesNotMatch(policy,/access:'PUBLIC_LAUNCH'/);
  assert.match(policy,/EDITION='CUSTOMER_STARTER'/);
 });
+
+test('Chrome Edge and Firefox distribution declare one owned icon set for store listing',()=>{
+ const chromium=manifest;
+ const firefox=JSON.parse(read('manifest.firefox.json'));
+ const icons=Object.fromEntries([16,32,48,128].map(n=>[String(n),`icons/leeway-${n}.png`]));
+ assert.deepEqual(chromium.icons,icons);
+ assert.deepEqual(chromium.action.default_icon,icons);
+ assert.deepEqual(firefox.icons,icons);
+ assert.deepEqual(firefox.action.default_icon,icons);
+ assert.deepEqual(firefox.sidebar_action.default_icon,icons);
+ const generator=readFileSync(path.join(root,'scripts','generate_extension_icons.py'),'utf8');
+ const packager=readFileSync(path.join(root,'scripts','package-extension.py'),'utf8');
+ assert.match(generator,/SIZES = \(16, 32, 48, 128\)/);
+ assert.match(packager,/generate\(source \/ 'icons'\)/);
+ assert.match(packager,/manifest\.get\('icons'\)/);
+});
