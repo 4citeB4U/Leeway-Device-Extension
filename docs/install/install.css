@@ -49,3 +49,14 @@ footer{color:#9fbacc;font-size:.8rem;border-top:1px solid #284357}
 .setup-actions a{display:inline-block;min-height:44px;padding:10px;border-radius:9px;background:#267d91;color:#fff;text-decoration:none;margin-top:8px}
 .setup-unavailable{color:#b6c7d4}
 @media(max-width:460px){.guided-setup{padding:16px}.setup-actions{grid-template-columns:1fr}}
+
+/* Account and hardware form factor appear before native download admission. */
+.onboarding-label{display:block;font-size:.91rem;font-weight:650;margin:8px 0}
+.guided-setup select{display:block;width:100%;max-width:520px;border:1px solid #6b94a5;
+  border-radius:10px;background:#142e42;color:#eef7ff;font:inherit;min-height:46px;padding:8px 12px}
+.guided-setup select:focus-visible,.browser-choice:focus-within{outline:3px solid #87d9ec;outline-offset:3px}
+.guided-setup fieldset .hint a{color:#8adeef;text-decoration:underline}
+.guided-setup #linuxVariantWrap{margin-top:16px}
+.guided-setup #githubHelp a{display:inline-flex;align-items:center;min-height:44px;padding:8px 0}
+.guided-setup input[type="radio"]{width:20px;height:20px;accent-color:#74d6e8}
+.guided-setup .setup-actions li a{color:#fff}
