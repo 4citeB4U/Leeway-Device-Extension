@@ -15,9 +15,11 @@ LICENSE = Existing repository terms apply; no new license asserted.
 'use strict';
 const version='0.4.0';
 const DEFAULTS=Object.freeze({
-  githubRepo:'https://github.com/4citeB4U/Leeway-Device-Extension',
-  tabletUrl:'https://4citeb4u.github.io/Leeway-Agent-Virtual-Tablet/',
-  bridgeHealthUrl:'https://leeway-native-device-bridge.onrender.com/healthz',
+  // Never call or launch the Creator workspace as a tenant default.
+  // Only the authenticated Runtime provisioner may bind customer resources.
+  githubRepo:null,
+  tabletUrl:null,
+  bridgeHealthUrl:null,
   recoveryInfo:'https://github.com/4citeB4U/LeeWay-Continuum'
 });
 const OS_FAMILIES=Object.freeze(['Microsoft Windows','Linux','Apple','Android']);
@@ -78,9 +80,9 @@ function normalizeProfile(profile){
   if(!instanceLabel||instanceLabel.length>60)throw Error('TENANT_LABEL_INVALID');
   return Object.freeze({
     instanceLabel,
-    githubRepo:parseGitHubRepo(profile.githubRepo||DEFAULTS.githubRepo).url,
-    tabletUrl:httpsUrl(profile.tabletUrl||DEFAULTS.tabletUrl),
-    bridgeHealthUrl:bridgeHealthUrl(profile.bridgeHealthUrl||DEFAULTS.bridgeHealthUrl)
+    githubRepo:profile.githubRepo?parseGitHubRepo(profile.githubRepo).url:null,
+    tabletUrl:profile.tabletUrl?httpsUrl(profile.tabletUrl):null,
+    bridgeHealthUrl:profile.bridgeHealthUrl?bridgeHealthUrl(profile.bridgeHealthUrl):null
   });
 }
 // App availability here only controls presentation. Only canonical Runtime can
