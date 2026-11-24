@@ -92,6 +92,19 @@ LICENSE: Existing repository terms apply.
 
       candidate.onMessage.addListener(message => {
         if (port !== candidate) return;
+        if (message?.type === 'leeway.extension.denied') {
+          const reason = /^[A-Z][A-Z0-9_]{2,127}$/.test(message.reason || '')
+            ? message.reason : 'BRIDGE_NATIVE_REQUEST_DENIED';
+          if (!sessionId) { reset(reason); return; }
+          const item = bridgePending.get(message.requestId);
+          if (item && message.sessionId === sessionId) {
+            bridgePending.delete(message.requestId);
+            clearTimeout(item.timer);
+            bridgeSnapshot = null;
+            item.reject(Error(reason));
+          }
+          return;
+        }
         if (message?.type === 'leeway.extension.hello-ack') {
           if (sessionId) return;
           if (message.version !== B.VERSION || message.helloId !== expectedId ||
