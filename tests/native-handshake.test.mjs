@@ -26,6 +26,7 @@ function setup(options = {}) {
   let disconnects = 0;
   const runtime = {
     id: 'test-extension-id',
+    getURL(path){return 'chrome-extension://test-extension-id/'+path;},
     onMessage: {addListener(fn) {runtimeListeners.push(fn);}},
     connectNative(name) {
       if (options.failConnect) throw new Error('host missing');
@@ -54,6 +55,7 @@ function setup(options = {}) {
   const scope = {chrome, crypto: {randomUUID}, URL, setTimeout, clearTimeout};
   scope.globalThis = scope;
   vm.runInNewContext(load('browser-polyfill.js'), scope, {filename:'browser-polyfill.js'});
+  vm.runInNewContext(load('bridge-session-contract.js'), scope, {filename:'bridge-session-contract.js'});
   vm.runInNewContext(load('background.js'), scope, {filename:'background.js'});
   async function request(type, payload = undefined, origin = 'https://example.test/page', id = runtime.id) {
     let response;
@@ -66,7 +68,16 @@ function setup(options = {}) {
   function schedule(type, payload = undefined) {
     return request(type,payload);
   }
-  return {ports,request,schedule, actionListeners,scripting, getDisconnects:()=>disconnects};
+  async function panelRequest(type,payload){
+    let response;
+    const yes=runtimeListeners[0]({type,payload},
+      {id:runtime.id,url:runtime.getURL('operating-system.html')},data=>{response=data;});
+    if(!yes)return null;
+    for(let i=0;i<6&&response===undefined;i++)await new Promise(resolve=>setImmediate(resolve));
+    if(response===undefined)throw Error('PANEL_RESPONSE_NOT_SETTLED');
+    return response;
+  }
+  return {ports,request,schedule,panelRequest, actionListeners,scripting, getDisconnects:()=>disconnects};
 }
 
 const ownerAck = (port, changes={})=>({
@@ -169,4 +180,75 @@ test('handshake transport error fails closed and does not produce a session',asy
 test('unknown native host fails without claiming connected',async()=>{
   const f=setup({failConnect:true});const result=await f.request('LEEWAY_CONNECT');
   assert.match(result.error,/NATIVE_HOST_UNAVAILABLE/);
+});
+
+const realBridgeReply=(request,overrides={})=>({
+ type:'leeway.extension.bridge-snapshot',
+ version:3,requestId:request.requestId,sessionId:request.sessionId,
+ authority:'LEEWAY_DEVICE_BRIDGE_CANONICAL_PROTOCOL',
+ ownerBinding:'ZITADEL_OWNER_SUB_VERIFIED',
+ runtimeStatus:'AVAILABLE',runtimeAuthentication:'OIDC_ACCESS_TOKEN_VERIFIED',
+ registrationState:'TRUSTED_REGISTRY_READ',
+ observedAt:new Date().toISOString(),
+ capabilities:['device.bridge.discovery.read','tablet.session.open'],
+ devices:[{id:'owner-device-01',platform:'windows',reachability:'REACHABLE',registrationState:'TRUSTED_REGISTRY_READ'}],
+ tablet:{state:'OWNER_SESSION_AUTHORIZED',display:'LEEWAY_AGENT_VIRTUAL_TABLET',
+   url:'https://owner-workspace.example.com/tablet/'},
+ ...overrides
+});
+
+test('native courier hello alone cannot qualify original Device Bridge or open Tablet',async()=>{
+ const f=setup();await openSession(f);
+ const state=await f.panelRequest('LEEWAY_STATUS');
+ assert.equal(state.result.connected,true);
+ assert.equal(state.result.bridgeQualified,false);
+ assert.equal(state.result.bridgeState,'BRIDGE_READBACK_REQUIRED');
+});
+
+test('valid correlated owner-bound Bridge readback is a display session, never execution proof',async()=>{
+ const f=setup();const port=await openSession(f);
+ const reading=f.panelRequest('LEEWAY_BRIDGE_SNAPSHOT');
+ await new Promise(resolve=>setImmediate(resolve));
+ const req=port.sent[1];
+ assert.equal(req.type,'leeway.extension.bridge-snapshot-request');
+ assert.deepEqual([...req.requestedCapabilities],['device.bridge.discovery.read','tablet.session.open']);
+ port.deliver(realBridgeReply(req));
+ const result=await reading;
+ assert.equal(result.ok,true);
+ assert.equal(result.result.state,'NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED');
+ assert.equal(result.result.execution,'NOT_ASSERTED');
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,true);
+});
+
+test('unbound device registry is denied even with a forged successful native courier session',async()=>{
+ const f=setup();const port=await openSession(f);
+ const reading=f.panelRequest('LEEWAY_BRIDGE_SNAPSHOT');
+ await new Promise(resolve=>setImmediate(resolve));
+ port.deliver(realBridgeReply(port.sent[1],{registrationState:'REGISTRATION_AUTHORITY_UNBOUND',devices:[]}));
+ const result=await reading;
+ assert.equal(result.ok,false);
+ assert.match(result.error,/AUTHORITY_UNBOUND/);
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
+});
+
+test('page tab sender cannot request owner device registry or Tablet session URL',async()=>{
+ const f=setup();
+ const response=await f.request('LEEWAY_BRIDGE_SNAPSHOT');
+ assert.equal(response,null);
+ assert.equal(f.ports.length,0);
+});
+
+test('native disconnect clears previously qualified Bridge snapshot and rejects outstanding readback',async()=>{
+ const f=setup();const port=await openSession(f);
+ const first=f.panelRequest('LEEWAY_BRIDGE_SNAPSHOT');
+ await new Promise(resolve=>setImmediate(resolve));
+ port.deliver(realBridgeReply(port.sent[1]));
+ assert.equal((await first).ok,true);
+ const second=f.panelRequest('LEEWAY_BRIDGE_SNAPSHOT');
+ await new Promise(resolve=>setImmediate(resolve));
+ port.close();
+ const failed=await second;
+ assert.equal(failed.ok,false);
+ assert.match(failed.error,/NATIVE_HOST_DISCONNECTED/);
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
 });
