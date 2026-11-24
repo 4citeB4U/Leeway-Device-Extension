@@ -24,7 +24,16 @@ files = [
     'floating-tablet.js', 'operating-policy.js', 'service-retry.js',
     'operating-system.html', 'operating-system.css', 'operating-system.js'
 ]
+# Public customer bundle is allowlisted; the Creator Golden Master,
+# full Tablet source, local models and enterprise application modules are
+# never copied into a browser archive.
 assert all((source / name).is_file() for name in files)
+assert all('/' not in name and not name.endswith(('.pem','.key','.p8','.onnx','.gguf','.db','.sqlite','.pt')) for name in files)
+assert set(files)=={
+ 'browser-polyfill.js','background.js','content-courier.js','floating-tablet.js',
+ 'operating-policy.js','service-retry.js','operating-system.html',
+ 'operating-system.css','operating-system.js'
+}
 artifacts = {}
 for browser, manifest_name in (
     ('chromium', 'manifest.json'),
@@ -57,6 +66,7 @@ for browser, manifest_name in (
             info.compress_type = ZIP_DEFLATED
             info.external_attr = 0o644 << 16
             output.writestr(info, payload)
+    assert archive.stat().st_size <= 256 * 1024, 'CUSTOMER_BUNDLE_EXCEEDS_LIGHTWEIGHT_BUDGET'
     with ZipFile(archive) as proof:
         assert proof.testzip() is None
         assert len(proof.namelist()) == len(files) + 1
