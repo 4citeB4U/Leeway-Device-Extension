@@ -51,3 +51,15 @@ test('Creator console and public signup UI are not packaged into the customer ex
  assert.doesNotMatch(JSON.stringify(manifest),/creator\/|join\/|creator-console/);
  assert.match(file('extension/operating-policy.js'),/creator-console/);
 });
+
+test('Creator phone/PC pairing page requires OIDC, never clones keys or treats browser as native adapter',()=>{
+ const html=file('creator/connect/index.html');
+ const js=file('creator/connect/connect.js');
+ assert.match(html,/same Creator identity/);
+ assert.match(html,/never a copy of your signing keys/);
+ assert.match(js,/\/api\/creator\/pairing\/bootstrap/);
+ assert.match(js,/\/api\/creator\/pairing\/begin/);
+ assert.match(js,/code_challenge_method/);
+ assert.match(js,/history\.replaceState/);
+ assert.doesNotMatch(js,/localStorage|sessionStorage|document\.cookie|eval\(/);
+});
