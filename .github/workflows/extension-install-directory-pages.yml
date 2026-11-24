@@ -16,6 +16,7 @@ on:
       - 'docs/release-catalog.json'
       - 'docs/install/**'
       - 'tests/distribution-catalog.test.mjs'
+      - 'join/**'
       - '.github/workflows/extension-install-directory-pages.yml'
   push:
     branches: [main]
@@ -44,6 +45,7 @@ jobs:
           node --check docs/install/setup-policy.js
           node --check docs/install/onboarding-policy.js
           node --check docs/install/setup.js
+          node --check join/join.js
           node --check tests/onboarding-policy.test.mjs
           node --test tests/distribution-catalog.test.mjs tests/setup-policy.test.mjs tests/onboarding-policy.test.mjs
   deploy:
@@ -61,6 +63,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Ship the ORIGINAL secure join client at the project /join route
+        run: |
+          mkdir -p docs/join
+          cp join/index.html join/join.js docs/join/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs
