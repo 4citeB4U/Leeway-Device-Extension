@@ -300,15 +300,15 @@ LICENSE: Existing repository terms apply.
       if (setting?.then) void setting.then(()=>{panelReady=true;},()=>{panelReady=false;});
     } catch { panelReady=false; }
   }
-  B.api.action.onClicked.addListener(tab => {
-    // On Chromium, toolbar action opens the OS sidebar; preserve the older
-    // explicit native courier click only on browsers without that ability.
+  B.api.action.onClicked.addListener(() => {
+    // Chrome/Edge sidePanel is the normal native Bridge display. On browsers
+    // without sidePanel activation, open our own extension page, NEVER inject
+    // a floating public Tablet or a courier into an unrelated website.
     if (panelReady) return;
-    if (Number.isInteger(tab?.id) && B.allowedPage(tab.url)) {
-      void B.call('scripting.executeScript', {
-        target: { tabId: tab.id },
-        files: ['browser-polyfill.js', 'content-courier.js', 'floating-tablet.js']
-      }).catch(() => {/* Not authorized or unsupported; no background collection. */});
+    const url = B.api.runtime.getURL?.('operating-system.html');
+    if (url && B.api.tabs?.create) {
+      void B.call('tabs.create', {url, active:true})
+        .catch(() => {/* Missing browser display grant is a denial, not a preview. */});
     }
   });
 })(globalThis);
