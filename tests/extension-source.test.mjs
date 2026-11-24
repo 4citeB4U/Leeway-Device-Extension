@@ -39,3 +39,15 @@ test('does not impersonate a runtime or evidence authority', () => {
   assert.match(source, /NATIVE_HOST_NOT_AUTHENTICATED/);
   assert.doesNotMatch(source, /<all_urls>|localhost:43117|Access-Control-Allow-Origin/);
 });
+
+test('customer package never bundles a Creator Tablet entry or digital employee exports',()=>{
+ const html=read('operating-system.html');
+ const ui=read('operating-system.js');
+ const policy=read('operating-policy.js');
+ assert.match(html,/Customer Starter/);
+ assert.match(html,/Open my Tablet/);
+ assert.doesNotMatch(html,/Open full Tablet|Employee Deployment|Digital Employment Center|forkExtension|tabletFrame/);
+ assert.doesNotMatch(ui,/external\(profile\.tabletUrl\)|forkExtension|previewTablet/);
+ assert.doesNotMatch(policy,/access:'PUBLIC_LAUNCH'/);
+ assert.match(policy,/EDITION='CUSTOMER_STARTER'/);
+});
