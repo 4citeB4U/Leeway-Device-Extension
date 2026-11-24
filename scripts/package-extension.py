@@ -15,24 +15,28 @@ from hashlib import sha256
 from json import dumps, loads
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
+from generate_extension_icons import generate, SIZES
 
 root = Path(__file__).resolve().parents[1]
 source, dist = root / 'extension', root / 'dist'
 dist.mkdir(exist_ok=True)
+generate(source / 'icons')
 files = [
     'browser-polyfill.js', 'background.js', 'content-courier.js',
     'floating-tablet.js', 'operating-policy.js', 'service-retry.js',
     'operating-system.html', 'operating-system.css', 'operating-system.js'
-]
+] + [f'icons/leeway-{size}.png' for size in SIZES]
 # Public customer bundle is allowlisted; the Creator Golden Master,
 # full Tablet source, local models and enterprise application modules are
 # never copied into a browser archive.
 assert all((source / name).is_file() for name in files)
-assert all('/' not in name and not name.endswith(('.pem','.key','.p8','.onnx','.gguf','.db','.sqlite','.pt')) for name in files)
+assert all(not name.startswith('/') and '..' not in Path(name).parts and
+           not name.endswith(('.pem','.key','.p8','.onnx','.gguf','.db','.sqlite','.pt')) for name in files)
 assert set(files)=={
  'browser-polyfill.js','background.js','content-courier.js','floating-tablet.js',
  'operating-policy.js','service-retry.js','operating-system.html',
- 'operating-system.css','operating-system.js'
+ 'operating-system.css','operating-system.js',
+ *[f'icons/leeway-{size}.png' for size in SIZES]
 }
 artifacts = {}
 for browser, manifest_name in (
@@ -43,6 +47,8 @@ for browser, manifest_name in (
     manifest = loads(manifest_bytes)
     assert manifest['manifest_version'] == 3
     assert manifest['name'] == 'LeeWay Operating System'
+    assert manifest.get('icons') == {str(size): f'icons/leeway-{size}.png' for size in SIZES}
+    assert manifest['action']['default_icon'] == manifest['icons']
     assert 'https://*/*' in manifest['optional_host_permissions']
     assert 'host_permissions' not in manifest
     assert 'content_scripts' not in manifest
