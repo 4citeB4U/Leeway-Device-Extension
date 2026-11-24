@@ -34,7 +34,8 @@ LICENSE: Existing repository terms apply.
     host: B.HOST,
     authority: 'NATIVE_HOST_ONLY',
     execution: 'NOT_ASSERTED',
-    bridgeQualified: Boolean(port && sessionId && bridgeSnapshot),
+    bridgeQualified: Boolean(port && sessionId && bridgeSnapshot &&
+      Date.now() - Date.parse(bridgeSnapshot.observedAt) <= 90000),
     deviceCount: bridgeSnapshot?.devices?.length || 0,
     bridgeState: bridgeSnapshot ? 'NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED' : 'BRIDGE_READBACK_REQUIRED'
   });
@@ -103,6 +104,7 @@ LICENSE: Existing repository terms apply.
             bridgeSnapshot = null;
             item.reject(Error(reason));
           }
+          if (reason === 'BRIDGE_NATIVE_SESSION_NOT_ADMITTED') reset(reason);
           return;
         }
         if (message?.type === 'leeway.extension.hello-ack') {
@@ -179,6 +181,8 @@ LICENSE: Existing repository terms apply.
   }
 
   async function readBridgeSnapshot() {
+    // Invalidate any prior observation before requesting a fresh physical readback.
+    bridgeSnapshot = null;
     await connect();
     if (!port || !sessionId) throw Error('NATIVE_HOST_NOT_AUTHENTICATED');
     const requestId = crypto.randomUUID();
