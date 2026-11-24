@@ -14,6 +14,8 @@ on:
   pull_request:
     paths:
       - 'extension/**'
+      - 'creator/**'
+      - 'join/**'
       - 'tests/**'
       - 'provisioning/**'
       - 'scripts/package-extension.py'
@@ -44,6 +46,9 @@ jobs:
           node --check tests/native-handshake.test.mjs
           node --check tests/operating-policy.test.mjs
           node --check tests/tenant-install-plan.test.mjs
+          node --check creator/creator-console.js
+          node --check join/join.js
+          node --check tests/creator-join-source.test.mjs
       - name: Source negative tests
         run: npm test
       - name: Deterministic unsigned Chrome and Firefox source packages
