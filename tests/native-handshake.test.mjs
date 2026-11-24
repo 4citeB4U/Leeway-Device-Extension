@@ -263,3 +263,25 @@ test('page courier only or missing Tablet grant must NOT authenticate as the Dev
   assert.match(result.error,/NATIVE_AUTHENTICATION_NOT_QUALIFIED/);
  }
 });
+
+test('native host returns real authority denial immediately instead of fake connected status',async()=>{
+ const first=setup();
+ const waiting=first.schedule('LEEWAY_CONNECT');
+ await new Promise(resolve=>setImmediate(resolve));
+ first.ports[0].deliver({type:'leeway.extension.denied',reason:'BRIDGE_NATIVE_OWNER_RUNTIME_GRANTS_UNBOUND'});
+ const denied=await waiting;
+ assert.equal(denied.ok,false);
+ assert.match(denied.error,/BRIDGE_NATIVE_OWNER_RUNTIME_GRANTS_UNBOUND/);
+ assert.equal((await first.panelRequest('LEEWAY_STATUS')).result.connected,false);
+
+ const f=setup();const port=await openSession(f);
+ const request=f.panelRequest('LEEWAY_BRIDGE_SNAPSHOT');
+ await new Promise(resolve=>setImmediate(resolve));
+ const sent=port.sent[1];
+ port.deliver({type:'leeway.extension.denied',requestId:sent.requestId,
+   sessionId:sent.sessionId,reason:'BRIDGE_NATIVE_DEVICE_REGISTRY_UNBOUND'});
+ const rejected=await request;
+ assert.equal(rejected.ok,false);
+ assert.match(rejected.error,/BRIDGE_NATIVE_DEVICE_REGISTRY_UNBOUND/);
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
+});
