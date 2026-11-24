@@ -29,7 +29,7 @@ function detectEnvironment(navigatorLike={}){
   let family=android?'Android':apple?'Apple':windows?'Windows':linux?'Linux':'Unknown';
   let form=android?(/Mobile/i.test(ua)?'phone':'tablet'):ios?(/iPad/i.test(ua)||(/Macintosh/i.test(ua)&&touch>1)?'tablet':'phone'):'desktop';
   if(family==='Unknown')form='unknown';
-  const browser=/OPR\\/|OPT\\/|Opera/i.test(ua)?'other':
+  const browser=/OPR\/|OPT\/|Opera/i.test(ua)?'other':
     /; wv|WebView/i.test(ua)?'other':
     /EdgA\/|EdgiOS\/|Edg\//i.test(ua)?'edge':
     /FxiOS\/|Firefox\//i.test(ua)?'firefox':
