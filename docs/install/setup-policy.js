@@ -29,7 +29,9 @@ function detectEnvironment(navigatorLike={}){
   let family=android?'Android':apple?'Apple':windows?'Windows':linux?'Linux':'Unknown';
   let form=android?(/Mobile/i.test(ua)?'phone':'tablet'):ios?(/iPad/i.test(ua)||(/Macintosh/i.test(ua)&&touch>1)?'tablet':'phone'):'desktop';
   if(family==='Unknown')form='unknown';
-  const browser=/EdgA\/|EdgiOS\/|Edg\//i.test(ua)?'edge':
+  const browser=/OPR\\/|OPT\\/|Opera/i.test(ua)?'other':
+    /; wv|WebView/i.test(ua)?'other':
+    /EdgA\/|EdgiOS\/|Edg\//i.test(ua)?'edge':
     /FxiOS\/|Firefox\//i.test(ua)?'firefox':
     /CriOS\/|Chrome\//i.test(ua)?'chrome':
     /Safari\//i.test(ua)&&!/OPR\/|OPT\//i.test(ua)?'safari':'other';
@@ -61,7 +63,9 @@ function browserRoute(env,id){
 function companionId(env){
  if(env.family==='Android')return 'android-companion';
  if(env.family==='Apple')return 'apple-companion';
- return null; // Windows/Linux signed native companion is separate from browser ZIP.
+ if(env.family==='Windows')return 'windows-companion';
+ if(env.family==='Linux')return 'linux-companion';
+ return null;
 }
 function planSetup(env,selected,catalog){
  if(!env||!Array.isArray(selected)||selected.length>5||
@@ -77,13 +81,9 @@ function planSetup(env,selected,catalog){
    actions.push(Object.freeze({
      kind:'native-companion',channel:companion,
      state:c?.status==='PUBLISHED'?'APPROVED_STORE_LINK_REQUIRED':'SIGNED_COMPANION_NOT_AVAILABLE',
-     reason:'Each phone/tablet needs its own qualified OS-native Device Bridge identity and consent.'
-   }));
- }else if(desktopOS.has(env.family)){
-   actions.push(Object.freeze({
-     kind:'native-companion',channel:'original-device-bridge-installer',
-     state:'SIGNED_COMPANION_NOT_VERIFIED',
-     reason:'Original OS installer must register the native host with approved browser extension IDs.'
+     reason:mobileForms.has(env.form)?
+       'Install the approved signed OS companion, then enroll this device with original owner consent.' :
+       'Install the approved native Bridge once for this OS; it registers the qualified browser host IDs.'
    }));
  }else{
    actions.push(Object.freeze({kind:'platform-review',state:'UNKNOWN_OS_DENIED',
