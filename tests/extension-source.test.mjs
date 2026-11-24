@@ -21,10 +21,10 @@ const read = name => readFileSync(path.join(root, 'extension', name), 'utf8');
 const manifest = JSON.parse(read('manifest.json'));
 test('uses explicit user activation and no ambient website permissions', () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'nativeMessaging', 'scripting', 'sidePanel', 'storage']);
-  assert.deepEqual(manifest.optional_host_permissions, ['https://*/*']);
+  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'nativeMessaging', 'scripting', 'sidePanel']);
+  assert.equal(manifest.optional_host_permissions, undefined);
   assert.equal(manifest.side_panel.default_path, 'operating-system.html');
-  assert.equal(manifest.name, 'LeeWay Operating System');
+  assert.equal(manifest.name, 'LeeWay Device Bridge');
   assert.equal(manifest.host_permissions, undefined);
   assert.equal(manifest.content_scripts, undefined);
 });
@@ -66,4 +66,23 @@ test('Chrome Edge and Firefox distribution declare one owned icon set for store 
  assert.match(generator,/SIZES = \(16, 32, 48, 128\)/);
  assert.match(packager,/generate\(source \/ 'icons'\)/);
  assert.match(packager,/manifest\.get\('icons'\)/);
+});
+
+test('release cannot bypass canonical native Bridge snapshot or launch the public preview',()=>{
+ const background=read('background.js');
+ const html=read('operating-system.html');
+ const controller=read('operating-system.js');
+ const contract=read('bridge-session-contract.js');
+ const packager=readFileSync(path.join(root,'scripts','package-extension.py'),'utf8');
+ assert.match(background,/LEEWAY_BRIDGE_SNAPSHOT/);
+ assert.match(background,/Bridge\.verifySnapshot/);
+ assert.match(contract,/REGISTRATION_AUTHORITY_UNBOUND|registrationState/);
+ assert.match(contract,/NO_REACHABLE_ENROLLED_DEVICE/);
+ assert.match(contract,/4citeb4u\.github\.io/);
+ assert.match(html,/id="openTablet" disabled/);
+ assert.doesNotMatch(html,/id="profileForm"|id="shortcutForm"|id="openRender"|id="openGitHub"/);
+ assert.match(controller,/NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED/);
+ assert.doesNotMatch(controller,/profile\.tabletUrl|bridgeHealthUrl|public.*preview/i);
+ assert.match(packager,/bridge-session-contract\.js/);
+ assert.doesNotMatch(packager,/\'operating-policy\.js\',\'service-retry\.js\'/);
 });
