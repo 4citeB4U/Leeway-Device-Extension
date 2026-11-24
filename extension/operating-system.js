@@ -23,6 +23,7 @@ function announce(value){$('message').textContent=String(value).slice(0,200)}
 function clear(reason){
  snapshot=null;
  $('openTablet').disabled=true;
+ $('openBusiness').disabled=true;
  $('instanceLabel').textContent='Not connected';
  $('instanceState').textContent='CONNECTION REQUIRED';
  $('bridgeStatus').textContent=reason||'NOT PROBED';
@@ -76,6 +77,7 @@ async function connectBridge(){
   $('bridgeStatus').textContent='Authenticated host-reported snapshot · '+candidate.devices.length+' devices; execution not asserted';
   showDevices(candidate.devices);
   $('openTablet').disabled=false;
+  $('openBusiness').disabled=false;
   announce('The Tablet can open from this host-reported owner session. Native device execution still requires C3 and its own receipts.');
  }catch(error){
   clear('BLOCKED · '+String(error?.message||error).slice(0,135));
@@ -85,17 +87,22 @@ async function connectBridge(){
   $('connectBridge').disabled=false;
  }
 }
-async function openTablet(){
+async function openTablet(view=null){
  if(!snapshot||$('openTablet').disabled)return;
  // An old browser session is not a current native owner/device admission.
  // Revalidate against the original host and physical device on every launch.
  await connectBridge();
  if(!snapshot||$('openTablet').disabled)return;
- const url=snapshot.tabletUrl;
+ const url=new URL(snapshot.tabletUrl);
+ if(view==='erpCrm'){
+   // This selects an existing Tablet app only. It is not a Creator claim.
+   // Original Runtime must separately authorize private customer reads.
+   url.searchParams.set('view','erpCrm');
+ }
  // Opening the real owner-authorized Tablet is a display action only;
  // the Tablet itself must independently authenticate before any private data.
  try{
-  const opened=api.tabs?.create?.({url,active:true});
+  const opened=api.tabs?.create?.({url:url.toString(),active:true});
   if(!opened)throw Error('BROWSER_TAB_API_UNAVAILABLE');
   if(typeof opened.catch==='function')opened.catch(()=>announce('Tablet launch denied by browser'));
  }catch{announce('Authenticated Tablet launch unavailable in this browser')}
@@ -107,6 +114,7 @@ async function disconnect(){
 }
 $('connectBridge').addEventListener('click',()=>void connectBridge());
 $('openTablet').addEventListener('click',()=>void openTablet());
+$('openBusiness').addEventListener('click',()=>void openTablet('erpCrm'));
 $('disconnect').addEventListener('click',()=>void disconnect());
 // One session probe when the owner opens the installed extension; no background
 // polling, screen scraping, URL-field setup or automatic native command dispatch.
