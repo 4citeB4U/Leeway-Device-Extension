@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.OPERATING_SYSTEM.CREATOR_CONSOLE
+TAG: LEEWAY.CREATOR.PAIR_FOUR_DEVICES_AND_INVITE.V1
+5WH:
+WHAT = Provide the Creator-only browser control surface for four enrolled devices and email invitations.
+WHY = Creator must see their Master on PC/phone and give others a separate customer-only signup link.
+WHO = Creator identified by canonical Runtime; outside support contributor NOT Agent Lee.
+WHERE = creator/creator-console.html in 4citeB4U/Leeway-Device-Extension (NEVER customer ZIP).
+WHEN = 2026-11-23.
+HOW = Same-origin authenticated Runtime routes, CSRF, real readback, no fake success or authorizer logic in page.
+LICENSE = Existing repository terms apply.
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09111c">
+<title>LeeWay Operating System · Creator</title>
+<style>
+:root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#08121e;color:#f0f7fc}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top right,#1b4a57,#08121e 48%);padding:20px 16px 48px}
+main{max-width:930px;margin:auto}
+header{display:flex;align-items:center;gap:13px;margin:10px 0 26px}
+mark{background:#12525d;color:white;border:1px solid #84d8d7;border-radius:50%;display:grid;place-items:center;width:48px;height:48px;font-weight:800;font-size:22px}
+h1{font-size:clamp(20px,4vw,28px);margin:0}header p{margin:0;color:#b1c8d5;font-size:13px}
+h2{font-size:18px;margin:4px 0 9px}h3{font-size:15px;margin:0}
+p{margin:6px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.panel{border:1px solid #345569;border-radius:14px;padding:18px;background:#122434db;margin-bottom:14px}
+.device{border:1px solid #35566e;background:#0b1d2c;border-radius:11px;padding:13px;display:flex;flex-direction:column;gap:6px}
+button,select{font:inherit;color:inherit;border:1px solid #4a7182;border-radius:9px;background:#173a4d;padding:10px 12px;cursor:pointer}
+button:hover{background:#245268}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible{outline:2px solid #83dade;outline-offset:3px}
+.primary{background:#11727c;border-color:#35a9b1}.primary:hover{background:#168b95}
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+small,.subtle{color:#b4c7d5;font-size:12px}
+.status{padding:10px;border:1px solid #795b46;border-radius:9px;background:#33271f;color:#f7d6ae}
+code{overflow-wrap:anywhere;color:#c5f2ef}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;margin:9px 0}
+input{font:inherit;color:inherit;width:100%;padding:10px;border-radius:9px;background:#081c2a;border:1px solid #446276}
+output{display:block;margin:12px 0;padding:12px;background:#08202b;border:1px solid #2c6370;border-radius:9px;overflow-wrap:anywhere}
+.hidden{display:none!important}
+footer{font-size:12px;color:#b0c5d5;margin-top:18px}
+</style>
+<script defer src="creator-console.js"></script>
+</head><body><main>
+<header><mark aria-hidden="true">L</mark><div><h1>LeeWay Operating System</h1><p>Creator Master · Devices · Customer invitations</p></div></header>
+<p id="banner" class="status" role="status">Not connected to the authenticated Creator Runtime. No Master devices or customer invitations have been issued from this page.</p>
+<section class="panel" aria-labelledby="devices-heading">
+ <h2 id="devices-heading">My Creator devices</h2>
+ <p class="subtle">One Creator instance, separate signed enrollment per device. No signing keys copied to phones or computers.</p>
+ <div class="grid" id="deviceSlots"></div>
+ <div class="actions" style="margin-top:15px">
+  <label for="osFamily">Enroll another device
+   <select id="osFamily"><option>Microsoft Windows</option><option>Android</option><option>Apple</option><option>Linux</option></select>
+  </label>
+  <button class="primary" id="issuePair" disabled>Generate owner-only pairing link</button>
+ </div>
+ <output id="pairResult" class="hidden" aria-live="polite"></output>
+</section>
+<section class="panel" aria-labelledby="invite-heading">
+ <h2 id="invite-heading">Invite someone to LeeWay</h2>
+ <p>Invitees join the <strong>Customer Starter</strong>, create their own account and GitHub project, and never receive your Master controls or employee-deployment authority.</p>
+ <label for="edition">Invitation edition
+  <select id="edition"><option value="PERSONAL">Personal</option><option value="INDUSTRIAL">Industrial</option></select>
+ </label>
+ <div class="actions">
+  <button class="primary" id="issueInvite" disabled>Generate customer invitation link</button>
+  <button id="copyInvite" disabled>Copy link</button>
+  <button id="emailInvite" disabled>Compose email</button>
+ </div>
+ <output id="inviteResult" class="hidden" aria-live="polite"></output>
+</section>
+<section class="panel">
+ <h2>Permission and service boundary</h2>
+ <p>LeeWay Runtime owns identity, licenses, headcount and revocation. Continuum owns the customer's project data. The customer extension only presents allowed features; it cannot issue Creator grants.</p>
+ <p class="subtle">The customer invitation never pairs a Master device. A Creator pairing link cannot be redeemed without the same Creator login, owner consent and a real signed native device passport.</p>
+</section>
+<footer>Creator surface candidate · This source page grants no permissions and is not yet deployed as a signed app or store extension.</footer>
+</main></body></html>
