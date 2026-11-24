@@ -30,7 +30,7 @@ LICENSE = Existing repository terms apply.
 </header>
 <section class="instance" aria-label="Instance identity">
  <div><small>WORKSPACE PROFILE</small><strong id="instanceLabel">Unbound client</strong></div>
- <span class="tag" id="instanceState">Not enrolled</span>
+ <span class="tag" id="instanceState">Customer Starter · Not enrolled</span>
 </section>
 <nav class="tabs" aria-label="Operating System sections">
  <button data-view="home" aria-current="page">Home</button>
@@ -40,14 +40,11 @@ LICENSE = Existing repository terms apply.
 <main>
 <section data-screen="home">
  <div class="hero">
-  <h2>Your LeeWay tablet</h2>
-  <p>The existing Agent Virtual Tablet is the application workspace. Services stay under their original authority.</p>
-  <div class="actions"><button id="openTablet" class="primary">Open full Tablet</button><button id="previewTablet">Tablet preview</button></div>
+  <h2>Your LeeWay Tablet</h2>
+  <p>Your lightweight workspace includes Digital Brain, Continuum and LeeWay Diagnostics. Other LeeWay systems are not included in this edition.</p>
+  <div class="actions"><button id="openTablet" class="primary">Open my Tablet</button></div>
  </div>
- <section class="preview hidden" id="previewPanel" aria-label="Embedded tablet preview">
-  <p>Embedded preview may be restricted by the Tablet host. The full Tablet remains available above.</p>
-  <iframe id="tabletFrame" title="LeeWay Agent Virtual Tablet" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
- </section>
+
  <h2>Managed services</h2>
  <article class="status-box">
   <div><strong>Device Bridge</strong><small id="bridgeStatus" role="status">Not checked</small></div>
@@ -68,8 +65,9 @@ LICENSE = Existing repository terms apply.
 </section>
 <section data-screen="apps" class="hidden">
  <h2>Your application launcher</h2>
- <p class="muted">Starter apps open their existing Tablet surfaces. Each service still enforces its own authentication and license.</p>
+ <p class="muted">Only the customer starter components are present. Local functions require an authorized device adapter and owner-scoped Continuum connection.</p>
  <div id="appList" class="apps"></div>
+ <article id="appStatus" class="status-box" role="status"><small>Select a starter app to see its connection requirements.</small></article>
  <h2>Personal shortcuts</h2>
  <p class="muted">Optional HTTPS shortcuts remain in this browser profile; they are not yet Continuum-synchronized applications.</p>
  <div id="shortcutList" class="shortcuts"></div>
@@ -92,16 +90,14 @@ LICENSE = Existing repository terms apply.
  </form>
  <small id="profileStatus" role="status"></small>
  <h2>Start under your own account</h2>
- <div class="actions wrap"><button id="openGitHub">GitHub account</button><button id="forkExtension">Fork extension source</button><button id="openRender">Render workspace</button></div>
+ <div class="actions wrap"><button id="openGitHub">GitHub sign-in</button><button id="openRender">Hosting sign-in (optional)</button></div>
  <p class="muted">A customer-owned Render service uses that customer's workspace allowance. Setup still requires their explicit provider authorization, separate identity enrollment, approved release, and license. No credentials are cloned.</p>
  <h2>Continuum and recovery</h2>
  <p>Source releases can be recovered from GitHub. Private Continuum restoration remains unqualified until encrypted backups, independently recoverable keys, and signed owner grants are proven.</p>
  <button id="openRecovery">View Continuum source</button>
- <h2>License and digital employees</h2>
- <p id="licenseStatus" class="warning">Remote employee dispatch locked. The Creator's signed license and an independently authorized Runtime grant are required. Locally created employees cannot be exported by this extension.</p>
- <p class="muted">Licenses must be checked and revocable at the canonical Runtime. Hiding or revealing a button never constitutes authorization.</p>
+
 </section>
 </main>
-<footer><small>LeeWay Operating System · Cloud entrypoint source preview · No physical-device qualification inferred</small><small id="message" role="status"></small></footer>
+<footer><small>LeeWay Operating System · CUSTOMER STARTER · Owner-scoped services · No Creator modules included</small><small id="message" role="status"></small></footer>
 </body>
 </html>
