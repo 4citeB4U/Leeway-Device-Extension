@@ -230,6 +230,9 @@ LICENSE: Existing repository terms apply.
     if (panelUrl && sender?.url === panelUrl &&
       ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_BRIDGE_SNAPSHOT','LEEWAY_DISCONNECT','LEEWAY_OPEN_COURIER'].includes(request?.type))
       return true;
+    // Native Bridge inventory and Tablet session URLs are never exposed to
+    // content scripts or normal page messages, even from the active tab.
+    if (request?.type === 'LEEWAY_BRIDGE_SNAPSHOT') return false;
     if (!B.allowedPage(sender?.tab?.url)) return false;
     try {
       return !request?.payload?.href ||
