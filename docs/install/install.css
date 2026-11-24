@@ -1,0 +1,62 @@
+/*
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.DEVICE_EXTENSION.GITHUB_DISTRIBUTION.STYLES
+TAG: LEEWAY.DEVICE_EXTENSION.SIX_CHANNEL_INSTALL_STYLES.V1
+5WH:
+WHAT = Accessible compact channel directory across phone, tablet, laptop and desktop sizes.
+WHY = Original LeeWay Device Bridge needs a readable installation hub on every device.
+WHO = Creator-authorized distribution maintainers.
+WHERE = docs/install/install.css.
+WHEN = 2026-11-24.
+HOW = CSS-only responsive layout and semantic browser-store links.
+LICENSE = Existing repository terms.
+*/
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:#07131e;color:#eef7ff}
+*{box-sizing:border-box}body{margin:0}header,main,footer{padding:28px max(18px,calc((100vw - 1100px)/2))}
+header{background:radial-gradient(ellipse at 100% 0,#18445b 0,transparent 65%),#0b1a29;border-bottom:1px solid #22435b}
+.mast{display:flex;align-items:center;gap:12px}.mast div{display:grid}.mast span:not(.coin){font-size:.78rem;color:#a5c2d2}
+.coin{display:grid;place-items:center;width:44px;height:44px;background:#112f3e;border:2px solid #75cfda;border-radius:50%;font-weight:800;font-size:1.35rem}h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.2;max-width:880px;margin:28px 0 14px}
+h2{font-size:1.35rem;margin:30px 0 10px}h3{font-size:1rem;margin:0 0 6px}
+p{color:#bed2df;max-width:900px}a{color:#8adeef}a:focus-visible{outline:3px solid #89e3f3;outline-offset:4px}
+.notice,.limits{border:1px solid #3b667b;border-radius:12px;padding:14px;background:#143042}
+.notice strong{color:#fff}.channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:20px}
+.channel{background:#14283a;border:1px solid #335468;border-radius:13px;padding:18px;min-height:190px;display:flex;flex-direction:column}
+.status{color:#c9e6ed;font-weight:600;font-size:.85rem;margin:0}.detail{font-size:.9rem;flex:1}
+.channel a,.unavailable{display:inline-block;margin-top:10px;border-radius:9px;padding:11px 14px;font-weight:650;text-decoration:none;min-height:44px}
+.channel a{background:#257987;color:#fff}.channel a:hover{background:#308e9b}
+.unavailable{background:#253641;color:#c5d0d7}
+ol{padding-left:24px;max-width:860px}li{margin:10px 0}.developer{display:flex;flex-wrap:wrap;gap:18px}
+footer{color:#9fbacc;font-size:.8rem;border-top:1px solid #284357}
+@media(max-width:460px){header,main,footer{padding:20px 16px}.channels{grid-template-columns:1fr}}
+
+/* Qualified OS/browser setup. This is a display hint, not device admission. */
+.guided-setup{border:1px solid #416a7b;border-radius:14px;padding:22px;background:#10273a;margin:24px 0}
+.guided-setup h2{margin-top:0}
+.guided-setup fieldset{border:1px solid #365b70;border-radius:11px;padding:14px;margin:18px 0}
+.guided-setup legend{padding:0 8px;font-weight:700}
+.browser-choices{display:flex;flex-wrap:wrap;gap:10px}
+.browser-choice{display:inline-flex;align-items:center;gap:10px;border:1px solid #48778b;border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer;background:#153448}
+.browser-choice:has(input:checked){border-color:#83d9e5;background:#1b5264}
+.browser-choice input{width:19px;height:19px;accent-color:#70d5e6}
+.guided-setup button{min-height:46px;padding:12px 17px;border:1px solid #94d9e8;border-radius:9px;background:#287b8d;color:#fff;font:inherit;font-weight:750;cursor:pointer}
+.guided-setup button:disabled{opacity:.55;cursor:not-allowed}
+.hint{font-size:.88rem;color:#afcada}
+.setup-actions{max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;list-style:decimal;padding-left:20px}
+.setup-actions li{border:1px solid #355b6b;background:#162f42;border-radius:10px;padding:14px 16px;margin:0;min-height:150px}
+.setup-actions li p{font-size:.85rem;margin:5px 0}
+.setup-state,.setup-unavailable{display:block;font-size:.75rem;overflow-wrap:anywhere;margin-top:8px}
+.setup-state{color:#ecd39a;font-weight:700}
+.setup-actions a{display:inline-block;min-height:44px;padding:10px;border-radius:9px;background:#267d91;color:#fff;text-decoration:none;margin-top:8px}
+.setup-unavailable{color:#b6c7d4}
+@media(max-width:460px){.guided-setup{padding:16px}.setup-actions{grid-template-columns:1fr}}
+
+/* Account and hardware form factor appear before native download admission. */
+.onboarding-label{display:block;font-size:.91rem;font-weight:650;margin:8px 0}
+.guided-setup select{display:block;width:100%;max-width:520px;border:1px solid #6b94a5;
+  border-radius:10px;background:#142e42;color:#eef7ff;font:inherit;min-height:46px;padding:8px 12px}
+.guided-setup select:focus-visible,.browser-choice:focus-within{outline:3px solid #87d9ec;outline-offset:3px}
+.guided-setup fieldset .hint a{color:#8adeef;text-decoration:underline}
+.guided-setup #linuxVariantWrap{margin-top:16px}
+.guided-setup #githubHelp a{display:inline-flex;align-items:center;min-height:44px;padding:8px 0}
+.guided-setup input[type="radio"]{width:20px;height:20px;accent-color:#74d6e8}
+.guided-setup .setup-actions li a{color:#fff}

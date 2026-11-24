@@ -14,27 +14,37 @@ LICENSE: Existing repository terms apply.
 (function (scope) {
   'use strict';
   if (!scope.LeeWayExtension && typeof importScripts === 'function') importScripts('browser-polyfill.js');
+  if (!scope.LeeWayBridgeSessionContract && typeof importScripts === 'function') importScripts('bridge-session-contract.js');
   const B = scope.LeeWayExtension;
-  if (!B?.api) return;
+  const Bridge = scope.LeeWayBridgeSessionContract;
+  if (!B?.api || !Bridge?.verifySnapshot) return;
   let port = null;
   let sessionId = null;
   let connectPromise = null;
   let handshakeId = null;
   let handshakeTimer = null;
   let failHandshake = null;
-  const pending = new Map();
+  const bridgePending = new Map();
+  let bridgeSnapshot = null;
+  let nativeCapabilities = [];
 
   const status = () => ({
     connected: Boolean(port && sessionId),
     host: B.HOST,
     authority: 'NATIVE_HOST_ONLY',
-    execution: 'NOT_ASSERTED'
+    execution: 'NOT_ASSERTED',
+    bridgeQualified: Boolean(port && sessionId && bridgeSnapshot &&
+      Date.now() - Date.parse(bridgeSnapshot.observedAt) <= 90000),
+    deviceCount: bridgeSnapshot?.devices?.length || 0,
+    bridgeState: bridgeSnapshot ? 'NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED' : 'BRIDGE_READBACK_REQUIRED'
   });
 
   function reset(reason = 'NATIVE_HOST_DISCONNECTED') {
     const oldPort = port;
     port = null;
     sessionId = null;
+    bridgeSnapshot = null;
+    nativeCapabilities = [];
     handshakeId = null;
     if (handshakeTimer) clearTimeout(handshakeTimer);
     handshakeTimer = null;
@@ -42,11 +52,11 @@ LICENSE: Existing repository terms apply.
     failHandshake = null;
     connectPromise = null;
     if (rejectHandshake) rejectHandshake(new Error(reason));
-    for (const item of pending.values()) {
+    for (const item of bridgePending.values()) {
       clearTimeout(item.timer);
       item.reject(new Error(reason));
     }
-    pending.clear();
+    bridgePending.clear();
     try { oldPort?.disconnect(); } catch { /* No authority inferred from disconnect. */ }
   }
 
@@ -77,13 +87,27 @@ LICENSE: Existing repository terms apply.
 
       candidate.onMessage.addListener(message => {
         if (port !== candidate) return;
+        if (message?.type === 'leeway.extension.denied') {
+          const reason = /^[A-Z][A-Z0-9_]{2,127}$/.test(message.reason || '')
+            ? message.reason : 'BRIDGE_NATIVE_REQUEST_DENIED';
+          if (!sessionId) { reset(reason); return; }
+          const item = bridgePending.get(message.requestId);
+          if (item && message.sessionId === sessionId) {
+            bridgePending.delete(message.requestId);
+            clearTimeout(item.timer);
+            bridgeSnapshot = null;
+            item.reject(Error(reason));
+          }
+          if (reason === 'BRIDGE_NATIVE_SESSION_NOT_ADMITTED') reset(reason);
+          return;
+        }
         if (message?.type === 'leeway.extension.hello-ack') {
           if (sessionId) return;
           if (message.version !== B.VERSION || message.helloId !== expectedId ||
             message.authenticated !== true || typeof message.sessionId !== 'string' ||
             !/^[A-Za-z0-9._:-]{8,128}$/.test(message.sessionId) ||
             !Array.isArray(message.capabilities) ||
-            !message.capabilities.includes('page.excerpt.submit')) {
+            Bridge.SESSION_CAPABILITIES.some(capability => !message.capabilities.includes(capability))) {
             reset('NATIVE_AUTHENTICATION_NOT_QUALIFIED');
             return;
           }
@@ -92,19 +116,28 @@ LICENSE: Existing repository terms apply.
           handshakeId = null;
           failHandshake = null;
           connectPromise = null;
+          nativeCapabilities = [...message.capabilities];
           sessionId = message.sessionId;
           resolve(status());
           return;
         }
-        const item = pending.get(message?.requestId);
-        if (!item || message?.type !== 'leeway.extension.receipt' ||
-          message.sessionId !== sessionId) return;
-        pending.delete(message.requestId);
-        clearTimeout(item.timer);
-        if (message.accepted === true) {
-          item.resolve({ acknowledged: true, authority: 'NATIVE_HOST_ACK_NOT_VERITAS' });
-        } else {
-          item.reject(new Error('NATIVE_REQUEST_REJECTED'));
+        if (message?.type === 'leeway.extension.bridge-snapshot') {
+          const entry = bridgePending.get(message?.requestId);
+          if (!entry) return;
+          bridgePending.delete(message.requestId);
+          clearTimeout(entry.timer);
+          try {
+            const snapshot = Bridge.verifySnapshot(message, {
+              requestId: entry.requestId, sessionId: entry.sessionId
+            });
+            if (port !== candidate || sessionId !== entry.sessionId) throw Error('NATIVE_SESSION_CHANGED');
+            bridgeSnapshot = snapshot;
+            entry.resolve(snapshot);
+          } catch (error) {
+            bridgeSnapshot = null;
+            entry.reject(error);
+          }
+          return;
         }
       });
       candidate.onDisconnect.addListener(() => {
@@ -115,7 +148,7 @@ LICENSE: Existing repository terms apply.
           type: 'leeway.extension.hello',
           version: B.VERSION,
           helloId: expectedId,
-          requestedCapabilities: ['page.excerpt.submit']
+          requestedCapabilities: [...Bridge.SESSION_CAPABILITIES]
         });
       } catch {
         reset('NATIVE_HELLO_SEND_FAILED');
@@ -131,32 +164,32 @@ LICENSE: Existing repository terms apply.
     return thisAttempt;
   }
 
-  function share(payload) {
-    if (!port || !sessionId) return Promise.reject(new Error('NATIVE_HOST_NOT_AUTHENTICATED'));
-    let safe;
-    try { safe = B.excerpt(payload); }
-    catch (error) { return Promise.reject(error); }
+  async function readBridgeSnapshot() {
+    // Invalidate any prior observation before requesting a fresh physical readback.
+    bridgeSnapshot = null;
+    await connect();
+    if (!port || !sessionId) throw Error('NATIVE_HOST_NOT_AUTHENTICATED');
     const requestId = crypto.randomUUID();
     const candidate = port;
     const currentSession = sessionId;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
-        pending.delete(requestId);
-        reject(new Error('NATIVE_RECEIPT_TIMEOUT'));
-      }, 8000);
-      pending.set(requestId, { resolve, reject, timer });
+        bridgePending.delete(requestId);
+        bridgeSnapshot = null;
+        reject(Error('BRIDGE_RUNTIME_READBACK_TIMEOUT'));
+      }, 10000);
+      bridgePending.set(requestId, {requestId,sessionId:currentSession,resolve,reject,timer});
       try {
         candidate.postMessage({
-          type: 'leeway.extension.page-excerpt',
-          version: B.VERSION,
-          requestId,
-          sessionId: currentSession,
-          excerpt: safe
+          type:'leeway.extension.bridge-snapshot-request',
+          version:B.VERSION,requestId,sessionId:currentSession,
+          requestedCapabilities:[...Bridge.SESSION_CAPABILITIES]
         });
       } catch {
-        pending.delete(requestId);
+        bridgePending.delete(requestId);
         clearTimeout(timer);
-        reject(new Error('NATIVE_EXCERPT_SEND_FAILED'));
+        bridgeSnapshot = null;
+        reject(Error('BRIDGE_RUNTIME_READBACK_SEND_FAILED'));
         if (port === candidate) reset('NATIVE_HOST_TRANSPORT_FAILURE');
       }
     });
@@ -164,28 +197,11 @@ LICENSE: Existing repository terms apply.
 
   function trusted(sender, request) {
     if (sender?.id !== B.api.runtime.id) return false;
-    // The extension's own sidebar can connect its optional native host, but
-    // it cannot submit content excerpts without a selected HTTP(S) page.
+    // An owner-scoped Bridge can only be opened by the extension page.
+    // Old page couriers and ordinary tabs never acquire this capability.
     const panelUrl = B.api.runtime.getURL?.('operating-system.html');
-    if (panelUrl && sender?.url === panelUrl &&
-      ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_DISCONNECT','LEEWAY_OPEN_COURIER'].includes(request?.type))
-      return true;
-    if (!B.allowedPage(sender?.tab?.url)) return false;
-    try {
-      return !request?.payload?.href ||
-        new URL(request.payload.href).origin === new URL(sender.tab.url).origin;
-    } catch { return false; }
-  }
-  async function openCourier(){
-    const tabs = await B.call('tabs.query',{active:true,currentWindow:true});
-    const tab = Array.isArray(tabs)?tabs[0]:null;
-    if (!Number.isInteger(tab?.id) || !B.allowedPage(tab?.url))
-      throw Error('COURIER_ACTIVE_PAGE_REQUIRED');
-    await B.call('scripting.executeScript',{
-      target:{tabId:tab.id},
-      files:['browser-polyfill.js','content-courier.js','floating-tablet.js']
-    });
-    return {opened:true,authority:'USER_ACTIVATED_COURIER_ONLY'};
+    return Boolean(panelUrl && sender?.url === panelUrl &&
+      ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_BRIDGE_SNAPSHOT','LEEWAY_DISCONNECT'].includes(request?.type));
   }
 
   B.api.runtime.onMessage.addListener((request, sender, respond) => {
@@ -194,13 +210,11 @@ LICENSE: Existing repository terms apply.
       ? Promise.resolve(status())
       : request.type === 'LEEWAY_CONNECT'
         ? connect()
+        : request.type === 'LEEWAY_BRIDGE_SNAPSHOT'
+          ? readBridgeSnapshot()
         : request.type === 'LEEWAY_DISCONNECT'
-          ? Promise.resolve().then(() => { reset(); return status(); })
-          : request.type === 'LEEWAY_SHARE_SELECTION'
-            ? share(request.payload)
-            : request.type === 'LEEWAY_OPEN_COURIER'
-              ? openCourier()
-              : null;
+          ? Promise.resolve().then(() => {reset();return status();})
+          : null;
     if (!job) return false;
     job.then(result => respond({ ok: true, result }),
       error => respond({ ok: false, error: String(error?.message || error).slice(0, 256) }));
@@ -214,15 +228,15 @@ LICENSE: Existing repository terms apply.
       if (setting?.then) void setting.then(()=>{panelReady=true;},()=>{panelReady=false;});
     } catch { panelReady=false; }
   }
-  B.api.action.onClicked.addListener(tab => {
-    // On Chromium, toolbar action opens the OS sidebar; preserve the older
-    // explicit native courier click only on browsers without that ability.
+  B.api.action.onClicked.addListener(() => {
+    // Chrome/Edge sidePanel is the normal native Bridge display. On browsers
+    // without sidePanel activation, open our own extension page, NEVER inject
+    // a floating public Tablet or a courier into an unrelated website.
     if (panelReady) return;
-    if (Number.isInteger(tab?.id) && B.allowedPage(tab.url)) {
-      void B.call('scripting.executeScript', {
-        target: { tabId: tab.id },
-        files: ['browser-polyfill.js', 'content-courier.js', 'floating-tablet.js']
-      }).catch(() => {/* Not authorized or unsupported; no background collection. */});
+    const url = B.api.runtime.getURL?.('operating-system.html');
+    if (url && B.api.tabs?.create) {
+      void B.call('tabs.create', {url, active:true})
+        .catch(() => {/* Missing browser display grant is a denial, not a preview. */});
     }
   });
 })(globalThis);

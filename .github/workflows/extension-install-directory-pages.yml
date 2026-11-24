@@ -1,0 +1,76 @@
+# LEEWAY HEADER — DO NOT REMOVE
+# REGION: LEEWAY.DEVICE_EXTENSION.PUBLIC_INSTALL_PORTAL
+# TAG: LEEWAY.DEVICE_EXTENSION.GITHUB_PAGES_STORE_DIRECTORY.V1
+# 5WH:
+# WHAT = Publish the original Bridge's six-channel store directory from this GitHub repository.
+# WHY = Give developers and users one version-controlled public discovery link.
+# WHO = Creator-authorized GitHub Pages release workflow; not native enrollment or app-store approval.
+# WHERE = .github/workflows/extension-install-directory-pages.yml.
+# WHEN = 2026-11-24.
+# HOW = Validate source catalog and deploy only static documentation; no private credentials or installable blocked ZIPs.
+# LICENSE = Existing repository terms.
+name: LeeWay Device Bridge Official Install Directory
+on:
+  pull_request:
+    paths:
+      - 'docs/release-catalog.json'
+      - 'docs/install/**'
+      - 'tests/distribution-catalog.test.mjs'
+      - 'join/**'
+      - '.github/workflows/extension-install-directory-pages.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/release-catalog.json'
+      - 'docs/install/**'
+      - '.github/workflows/extension-install-directory-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: leeway-device-bridge-install-directory
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify official store link allowlist and denied release catalog
+        run: |
+          node --check docs/install/install.js
+          node --check docs/install/setup-policy.js
+          node --check docs/install/onboarding-policy.js
+          node --check docs/install/setup.js
+          node --check join/join.js
+          node --check tests/join-directory.test.mjs
+          node --check tests/onboarding-policy.test.mjs
+          node --test tests/distribution-catalog.test.mjs tests/setup-policy.test.mjs tests/onboarding-policy.test.mjs tests/join-directory.test.mjs
+  deploy:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Ship the ORIGINAL secure join client at the project /join route
+        run: |
+          mkdir -p docs/join
+          cp join/index.html join/join.js docs/join/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+      - name: Deploy documentation-only GitHub Pages distribution directory
+        id: deployment
+        uses: actions/deploy-pages@v4

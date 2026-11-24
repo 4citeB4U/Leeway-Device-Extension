@@ -12,7 +12,19 @@ HOW = Link exact owning source, identify user experience, security boundaries, q
 LICENSE = Not asserted; do not import or republish source without its applicable terms.
 -->
 
-# LeeWay Universal Device Extension
+# LeeWay Device Bridge — Browser extensions and native device setup
+
+> **CURRENT NOVEMBER 24, 2026 REVIEW BRANCH — P0 DEVICE BRIDGE RELEASE HOLD.** This repository is the canonical source of the Chrome, Edge and Firefox browser packages, Safari extension source, OS/browser setup guidance and official distribution directory. The original signed native companion is owned by [LEEWAY-DEVICE-BRIDGE](https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE), not duplicated here. No native device or store install is production qualified.
+>
+> - [Device-aware setup directory source](docs/install/index.html) — detects an apparent OS/current browser locally, lets the owner choose additional browsers, and shows the approved native companion before eligible browser store links. When the directory workflow is merged and deployed to GitHub Pages, it can become the one public setup link. **No live public Pages URL is asserted yet.**
+> - [Eight-channel release catalog](docs/release-catalog.json) — Chrome, Edge, Firefox, Safari, Android, Apple, Windows, Linux. Official installation URLs stay **null** until signed/approved releases exist.
+> - [Full setup and release acceptance](docs/DEVICE_AND_BROWSER_SETUP_V1.md) — Windows/Linux desktop native host registration, Android Fold Chrome/Edge/Firefox limitations, Apple Safari containing app, owner consent and original Zitadel/Runtime/Continuum state.
+> - [Developer release workflow](.github/workflows/stage-device-bridge-github-release.yml) — creates a GitHub **DRAFT** release for audited Chrome/Edge/Firefox source bundles after owner-triggered reviewed-main source qualification. **No customer release or browser-store publication occurs automatically.**
+> - [Original Device Bridge browser host PR #138](https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE/pull/138) — native installer and approved OS/browser inventory source contract. Physical native installation and owner signing remain unqualified.
+>
+> **Physical connection is not established.** Browser UI, public Tablet preview, a ZIP or healthy Render endpoint cannot create a trusted Device Bridge. Old text below describes historical W01 source stages and should not be mistaken for the current executable release contract.
+
+
 
 **One setup. Many devices. Recover anywhere.**
 

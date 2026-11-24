@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "LeeWay Operating System",
-  "short_name": "LeeWay OS",
-  "version": "0.4.0",
-  "description": "Cloud-first LeeWay Operating System right-side Tablet launcher with optional enrolled Device Bridge native-host courier.",
+  "name": "LeeWay Device Bridge",
+  "short_name": "LeeWay Bridge",
+  "version": "0.5.0",
+  "description": "Authenticated LeeWay Device Bridge companion with Agent Virtual Tablet as its display. Requires approved native Device Bridge enrollment.",
   "minimum_chrome_version": "116",
   "action": {
-    "default_title": "LeeWay Operating System",
+    "default_title": "LeeWay Device Bridge",
     "default_icon": {
       "16": "icons/leeway-16.png",
       "32": "icons/leeway-32.png",
@@ -15,14 +15,8 @@
     }
   },
   "permissions": [
-    "activeTab",
-    "scripting",
     "nativeMessaging",
-    "storage",
     "sidePanel"
-  ],
-  "optional_host_permissions": [
-    "https://*/*"
   ],
   "side_panel": {
     "default_path": "operating-system.html"
@@ -31,7 +25,7 @@
     "service_worker": "background.js"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://4citeb4u.github.io;"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "icons": {
     "16": "icons/leeway-16.png",

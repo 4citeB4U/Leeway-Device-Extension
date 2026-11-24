@@ -1,0 +1,113 @@
+{
+  "schema": "leeway.extension.distribution.v1",
+  "status": "NOT_PUBLISHED",
+  "developerRepository": "https://github.com/4citeB4U/Leeway-Device-Extension",
+  "releasesPage": "https://github.com/4citeB4U/Leeway-Device-Extension/releases",
+  "canonicalDeviceBridge": "https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE",
+  "releaseVersion": "0.5.0",
+  "channels": [
+    {
+      "id": "chrome",
+      "title": "Chrome — desktop",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Apple"
+      ],
+      "distribution": "CHROME_WEB_STORE",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Chrome desktop extension. Requires original enrolled native Device Bridge host."
+    },
+    {
+      "id": "edge",
+      "title": "Edge — desktop",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Apple"
+      ],
+      "distribution": "EDGE_ADDONS",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Edge extension. Requires the approved native Bridge host and published Edge ID."
+    },
+    {
+      "id": "firefox",
+      "title": "Firefox — desktop / supported Android",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Android",
+        "Apple"
+      ],
+      "distribution": "MOZILLA_AMO",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Desktop Firefox extension. Firefox Android add-ons cannot use this desktop nativeMessaging host; use the original Android companion for device connectivity."
+    },
+    {
+      "id": "safari",
+      "title": "Safari — Apple",
+      "platforms": [
+        "Apple"
+      ],
+      "distribution": "APPLE_APP_STORE",
+      "status": "CONTAINING_APP_NOT_SIGNED",
+      "storeUrl": null,
+      "notes": "Apple macOS/iPhone/iPad Safari extension must be embedded and signed with the original qualified containing app."
+    },
+    {
+      "id": "android-companion",
+      "title": "LeeWay Android companion",
+      "platforms": [
+        "Android"
+      ],
+      "distribution": "GOOGLE_PLAY_OR_APPROVED_SIGNED_APP",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Android signed companion provides the original Device Bridge and Tablet display. Chrome for Android cannot run desktop Chrome Web Store extensions; mobile Edge/Firefox native Bridge extensions are not qualified."
+    },
+    {
+      "id": "apple-companion",
+      "title": "LeeWay Apple companion",
+      "platforms": [
+        "Apple"
+      ],
+      "distribution": "APPLE_APP_STORE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Apple signed companion provides OS-native Bridge/Tablet; Safari browser integration requires the signed containing app. iOS Chrome/Edge/Firefox are not desktop extension hosts."
+    },
+    {
+      "id": "windows-companion",
+      "title": "LeeWay Windows Device Bridge",
+      "platforms": [
+        "Windows"
+      ],
+      "distribution": "LEEWAY_SIGNED_NATIVE_RELEASE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Original signed Windows Bridge installer; must register qualified Chrome/Edge/Firefox native-messaging hosts using official browser IDs after owner approval."
+    },
+    {
+      "id": "linux-companion",
+      "title": "LeeWay Linux Device Bridge",
+      "platforms": [
+        "Linux"
+      ],
+      "distribution": "LEEWAY_SIGNED_NATIVE_RELEASE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Original signed Linux Bridge installer/adapter; must register qualified native-messaging hosts with portable OS paths and device-scoped owner enrollment."
+    }
+  ],
+  "requirements": {
+    "ownerAuthentication": "EXISTING_ZITADEL_RUNTIME",
+    "deviceEnrollment": "SIGNED_DEVICE_PASSPORT_PER_DEVICE",
+    "appState": "CANONICAL_RUNTIME_CONTINUUM_NOT_BROWSER_STORAGE",
+    "display": "AGENT_VIRTUAL_TABLET",
+    "installationPolicy": "UNAVAILABLE_UNTIL_NATIVE_DEVICE_BRIDGE_QUALIFIED",
+    "publishGate": "INDEPENDENT_RELEASE_EVIDENCE_AND_STORE_APPROVAL_REQUIRED"
+  }
+}

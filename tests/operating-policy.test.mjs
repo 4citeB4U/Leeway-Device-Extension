@@ -96,17 +96,17 @@ test('two platform manifests have no ambient host grants or silent content injec
  const chromium=JSON.parse(readFileSync(new URL('../extension/manifest.json',import.meta.url),'utf8'));
  const firefox=JSON.parse(readFileSync(new URL('../extension/manifest.firefox.json',import.meta.url),'utf8'));
  for(const m of [chromium,firefox]){
-   assert.equal(m.name,'LeeWay Operating System');
+   assert.equal(m.name,'LeeWay Device Bridge');
    assert.equal(m.manifest_version,3);
    assert.equal(m.host_permissions,undefined);
    assert.equal(m.content_scripts,undefined);
-   assert.deepEqual(m.optional_host_permissions,['https://*/*']);
+   assert.equal(m.optional_host_permissions,undefined);
    assert.match(m.content_security_policy.extension_pages,/script-src 'self'/);
-   assert.match(m.content_security_policy.extension_pages,/frame-src https:\/\/4citeb4u\.github\.io/);
+   assert.doesNotMatch(m.content_security_policy.extension_pages,/frame-src|4citeb4u/);
  }
  assert.equal(chromium.side_panel.default_path,'operating-system.html');
  assert.equal(chromium.background.service_worker,'background.js');
  assert.equal(firefox.sidebar_action.default_panel,'operating-system.html');
- assert.deepEqual(firefox.background.scripts,['browser-polyfill.js','background.js']);
+ assert.deepEqual(firefox.background.scripts,['browser-polyfill.js','bridge-session-contract.js','background.js']);
  assert.equal(firefox.permissions.includes('sidePanel'),false);
 });
