@@ -47,6 +47,7 @@ jobs:
           node --check tests/operating-policy.test.mjs
           node --check tests/tenant-install-plan.test.mjs
           node --check creator/creator-console.js
+          node --check creator/connect/connect.js
           node --check join/join.js
           node --check tests/creator-join-source.test.mjs
       - name: Source negative tests
