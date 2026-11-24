@@ -27,17 +27,24 @@ test('portable four-OS catalog and cloud-first unbound launcher',()=>{
  assert.deepEqual([...P.OS_FAMILIES],['Microsoft Windows','Linux','Apple','Android']);
  assert.equal(P.DEFAULTS.tabletUrl,'https://4citeb4u.github.io/Leeway-Agent-Virtual-Tablet/');
  assert.equal(P.DEFAULTS.bridgeHealthUrl,'https://leeway-native-device-bridge.onrender.com/healthz');
- assert.equal(P.APPS.some(app=>app.id==='employee-export'),true);
+ assert.equal(P.EDITION,'CUSTOMER_STARTER');
+ assert.deepEqual(Array.from(P.APPS,x=>x.id),
+  ['digital-brain','continuum','diagnostics','local-ai']);
+ assert.equal(P.APPS.some(app=>app.id==='employee-export'),false);
 });
 
 test('employee export and unknown application cannot be granted by client-supplied profile',()=>{
- assert.equal(P.presentationGate('employee-export'),'LOCKED_RUNTIME_LICENSE_REQUIRED');
+ assert.equal(P.presentationGate('employee-export'),'NOT_IN_CUSTOMER_PACKAGE');
  assert.equal(P.presentationGate('unknown-creator-app'),'UNKNOWN_APP_DENIED');
- assert.equal(P.presentationGate('continuum'),'OPEN_PUBLIC_TABLET_ONLY');
+ assert.equal(P.presentationGate('continuum'),'CUSTOMER_CORE_ENTRY');
+ assert.equal(P.presentationGate('local-ai'),'LOCAL_PROVIDER_ADMISSION_REQUIRED');
+ for(const id of ['model-hub','office','blackboard','app-foundry','employee-studio',
+    'creator-console','machine-consciousness','veritas-admin','formula-admin'])
+  assert.equal(P.presentationGate(id),'NOT_IN_CUSTOMER_PACKAGE',id);
  assert.throws(()=>P.normalizeProfile({instanceLabel:'Creator',token:'secret'}),/TENANT_PROFILE_FIELD_NOT_PUBLIC/);
  assert.throws(()=>P.normalizeProfile({instanceLabel:'Creator',ownerSub:'owner'}),/TENANT_PROFILE_FIELD_NOT_PUBLIC/);
  assert.throws(()=>P.normalizeProfile({instanceLabel:'Creator',licenseRole:'creator'}),/TENANT_PROFILE_FIELD_NOT_PUBLIC/);
- assert.equal(P.presentationGate('employee-export'),'LOCKED_RUNTIME_LICENSE_REQUIRED');
+ assert.equal(P.presentationGate('employee-export'),'NOT_IN_CUSTOMER_PACKAGE');
 });
 
 test('public tenant profile allows only deliberate HTTPS resources',()=>{
