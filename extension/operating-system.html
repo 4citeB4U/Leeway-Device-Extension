@@ -2,105 +2,56 @@
 <!--
 LEEWAY HEADER — DO NOT REMOVE
 REGION: LEEWAY.DEVICE_EXTENSION.OPERATING_SYSTEM
-TAG: LEEWAY.OPERATING_SYSTEM.SIDEBAR_HTML.V1
+TAG: LEEWAY.W01.BRIDGE_REQUIRED_TABLET_DISPLAY.V1
 5WH:
-WHAT = Present the right-hand LeeWay Operating System app launcher, cloud health, public GitHub recovery and tenant enrollment staging.
-WHY = Expose the existing hosted Tablet without depending on one Windows device or silently granting device authority.
-WHO = Creator-authorized outside GPT-6 source contributor.
+WHAT = Show original Device Bridge enrollment/readback as the gate to the actual Agent Virtual Tablet.
+WHY = A public Tablet preview, manual endpoint form or courier handshake is not a full LeeWay Device Bridge.
+WHO = Creator-authorized outside contributor; Runtime/Bridge and Zitadel remain canonical authority.
 WHERE = extension/operating-system.html in 4citeB4U/Leeway-Device-Extension.
 WHEN = 2026-11-23.
-HOW = Self-contained WebExtension page, user-action-only links and explicit not-qualified states.
-LICENSE = Existing repository terms apply.
+HOW = One browser side panel with real native Bridge status, enrolled devices, denied states and host-authorized Tablet launch.
+LICENSE = Existing repository terms; no additional rights granted.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>LeeWay Operating System</title>
+<title>LeeWay Device Bridge</title>
 <link rel="stylesheet" href="operating-system.css">
-<script defer src="operating-policy.js"></script>
-<script defer src="service-retry.js"></script>
 <script defer src="operating-system.js"></script>
 </head>
 <body>
 <header class="mast">
   <span class="coin" aria-hidden="true">L</span>
-  <div><h1>LeeWay Operating System</h1><p>One workplace. Your devices. Your account.</p></div>
+  <div><h1>LeeWay Device Bridge</h1><p>Agent Virtual Tablet · authenticated display</p></div>
 </header>
-<section class="instance" aria-label="Instance identity">
- <div><small>WORKSPACE PROFILE</small><strong id="instanceLabel">Unbound client</strong></div>
- <span class="tag" id="instanceState">Customer Starter · Not enrolled</span>
+<section class="instance" aria-label="Device Bridge connection">
+ <div><small>CANONICAL RUNTIME + DEVICE BRIDGE</small><strong id="instanceLabel">Not connected</strong></div>
+ <span class="tag" id="instanceState">CONNECTION REQUIRED</span>
 </section>
-<nav class="tabs" aria-label="Operating System sections">
- <button data-view="home" aria-current="page">Home</button>
- <button data-view="apps">Apps</button>
- <button data-view="setup">Setup</button>
-</nav>
 <main>
-<section data-screen="home">
+<section data-screen="bridge">
  <div class="hero">
-  <h2>Your LeeWay Tablet</h2>
-  <p>Your lightweight workspace includes Digital Brain, Continuum and LeeWay Diagnostics. Other LeeWay systems are not included in this edition.</p>
-  <div class="actions"><button id="openTablet" class="primary">Open my Tablet</button></div>
+   <h2>My LeeWay Tablet</h2>
+   <p>The Tablet displays your authenticated LeeWay environment. Your existing Device Bridge must report real owner enrollment, registered devices and an approved Tablet session before it can open.</p>
+   <div class="actions wrap">
+     <button type="button" class="primary" id="connectBridge">Connect Device Bridge</button>
+     <button type="button" id="openTablet" disabled>Open my Tablet</button>
+   </div>
+   <small id="nativeStatus" role="status">Checking existing native Device Bridge registration…</small>
  </div>
-
- <h2>Managed services</h2>
- <article class="status-box">
-  <div><strong>Device Bridge</strong><small id="bridgeStatus" role="status">Not checked</small></div>
-  <button id="checkBridge">Check health</button>
- </article>
- <article class="status-box">
-  <div><strong>GitHub source</strong><small id="githubStatus" role="status">Not checked; public metadata only</small></div>
-  <button id="checkGitHub">Inspect</button>
- </article>
- <article class="status-box">
-  <div><strong>Enrolled native device</strong><small id="nativeStatus" role="status">Optional host not connected</small></div>
-  <button id="connectNative">Connect</button>
- </article>
- <button id="openCourier">Share a selected browser-page excerpt (optional)</button>
- <h2>Universal platform adapters</h2>
- <div id="adapterList" class="adapters" aria-label="OS adapter families"></div>
- <p class="muted">Platform names do not establish device reachability, signed enrollment, or execution permission.</p>
-</section>
-<section data-screen="apps" class="hidden">
- <h2>Your application launcher</h2>
- <p class="muted">Only the customer starter components are present. Local functions require an authorized device adapter and owner-scoped Continuum connection.</p>
- <div id="appList" class="apps"></div>
- <article id="appStatus" class="status-box" role="status"><small>Select a starter app to see its connection requirements.</small></article>
- <h2>Personal shortcuts</h2>
- <p class="muted">Optional HTTPS shortcuts remain in this browser profile; they are not yet Continuum-synchronized applications.</p>
- <div id="shortcutList" class="shortcuts"></div>
- <form id="shortcutForm">
-   <label>Shortcut name<input name="name" maxlength="44" autocomplete="off" required placeholder="My application"></label>
-   <label>HTTPS destination<input name="url" type="url" maxlength="2048" autocomplete="off" required placeholder="https://example.com/app"></label>
-   <button type="submit">Add local shortcut</button>
- </form>
- <small id="shortcutStatus" role="status"></small>
-</section>
-<section data-screen="setup" class="hidden">
- <h2>My instance</h2>
- <p class="muted">Your projects and device connections belong to your account. Automated account binding is pending deployment; no Creator settings are copied.</p>
- <details id="technicalSetup"><summary>Advanced support settings (not required for normal signup)</summary>
- <form id="profileForm">
-  <label>Display name<input name="instanceLabel" maxlength="60" required placeholder="Personal workspace"></label>
-  <label>My GitHub source repository<input name="githubRepo" type="url" required maxlength="2048" placeholder="https://github.com/owner/repository"></label>
-  <label>My hosted Tablet HTTPS URL<input name="tabletUrl" type="url" required maxlength="2048"></label>
-  <label>My managed Bridge public health URL<input name="bridgeHealthUrl" type="url" required maxlength="2048" placeholder="https://my-bridge.example.com/healthz"></label>
-  <button type="submit" class="primary">Save public profile</button>
- </form>
- </details>
- <small id="profileStatus" role="status"></small>
- <h2>Start under your own account</h2>
- <div class="actions wrap"><button id="openGitHub">Open GitHub account</button></div>
- <details><summary>Optional hosting provider account</summary><button id="openRender">Open my hosting account</button></details>
- <p class="muted">Automatic LeeWay provisioning is not connected to this preview yet. You do not need the Creator's Render or GitHub accounts. Opening a provider website does not create a service.</p>
- <h2>Continuum and recovery</h2>
- <p>Source releases can be recovered from GitHub. Private Continuum restoration remains unqualified until encrypted backups, independently recoverable keys, and signed owner grants are proven.</p>
- <button id="openRecovery">Open my recovery project</button>
-
+ <h2>Actual device registration</h2>
+ <article class="status-box"><div><strong>Trusted Runtime / Zitadel</strong><small id="bridgeStatus" role="status">NOT PROBED</small></div></article>
+ <div id="deviceList" class="adapters" aria-label="Enrolled devices">
+  <p class="muted">No verified enrolled devices shown.</p>
+ </div>
+ <p class="muted" id="bridgeBoundary">Browser availability and a public health endpoint are not Device Bridge execution evidence. The original native Bridge installer must register the host for Chrome and Edge; each device remains independently enrolled and owner-authorized.</p>
+ <h2>Connection and recovery</h2>
+ <p class="muted">There is no manual URL or Windows drive-path setup. If registration is missing, correct the existing signed Device Bridge companion, Zitadel owner session or trusted device authority. Do not import a private key or use a developer signer.</p>
+ <div class="actions wrap"><button type="button" id="disconnect">Disconnect browser session</button></div>
 </section>
 </main>
-<footer><small>LeeWay Operating System · CUSTOMER STARTER · Owner-scoped services · No Creator modules included</small><small id="message" role="status"></small></footer>
+<footer><small>LeeWay Device Bridge · Creator Master / Customer Starter permissions come from the authenticated Runtime, not this browser.</small><small id="message" role="status"></small></footer>
 </body>
 </html>
