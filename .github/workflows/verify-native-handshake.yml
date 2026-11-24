@@ -1,0 +1,39 @@
+# LEEWAY HEADER — DO NOT REMOVE
+# REGION: LEEWAY.DEVICE_EXTENSION.HANDSHAKE.CI
+# TAG: LEEWAY.W01.EXTENSION.HANDSHAKE.CI.V1
+# 5WH:
+# WHAT = Qualify the actual browser native-handshake implementation with negative tests on each review.
+# WHY = Reject uncorrelated host messages, stale sessions and cross-origin browser launch bypasses.
+# WHO = Creator-authorized W01 contributor; GitHub Actions is test evidence, not Veritas.
+# WHERE = .github/workflows/verify-native-handshake.yml.
+# WHEN = 2026-11-19.
+# HOW = Node syntax, source tests and VM-simulated native port tests.
+# LICENSE = Existing repository terms apply.
+name: W01 Extension Native Handshake Source Tests
+on:
+  pull_request:
+    paths:
+      - 'extension/**'
+      - 'tests/**'
+      - '.github/workflows/verify-native-handshake.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  handshake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check extension/browser-polyfill.js
+          node --check extension/background.js
+          node --check extension/content-courier.js
+          node --check extension/floating-tablet.js
+          node --check tests/native-handshake.test.mjs
+      - name: Source negative tests
+        run: npm test
