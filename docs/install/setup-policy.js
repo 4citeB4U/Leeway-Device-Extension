@@ -58,6 +58,7 @@ function browserRoute(env,id){
    return id==='safari'?'SAFARI_CONTAINING_APP_REQUIRED':'IOS_BROWSER_NATIVE_BRIDGE_NOT_QUALIFIED';
  if(id==='other')return 'UNSUPPORTED_BROWSER';
  if(id==='safari'&&env.family!=='Apple')return 'UNSUPPORTED_BROWSER';
+ if(id==='safari')return 'SAFARI_CONTAINING_APP_REQUIRED';
  return 'DESKTOP_EXTENSION_SUPPORTED_AFTER_RELEASE';
 }
 function companionId(env){
