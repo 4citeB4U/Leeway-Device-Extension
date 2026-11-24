@@ -85,13 +85,22 @@ function renderApps(){
  const list=$('appList');list.replaceChildren();
  for(const app of policy.APPS){
   const gate=policy.presentationGate(app.id);
-  const button=document.createElement('button');button.className='app'+(gate!=='OPEN_PUBLIC_TABLET_ONLY'?' locked':'');
+  const button=document.createElement('button');button.className='app'+
+    (gate==='LOCAL_PROVIDER_ADMISSION_REQUIRED'?' locked':'');
   const symbol=document.createElement('span');symbol.className='glyph';symbol.textContent=app.symbol;
   const title=document.createElement('strong');title.textContent=app.name;
-  const detail=document.createElement('small');detail.textContent=gate==='OPEN_PUBLIC_TABLET_ONLY'?'Open Tablet surface':'Locked · verified deployment license required';
+  const detail=document.createElement('small');
+  detail.textContent=gate==='CUSTOMER_CORE_ENTRY'
+    ?'Customer core · connects to your own device':'Optional · bring your own local AI';
   button.title=app.detail;button.append(symbol,title,detail);
-  if(gate==='OPEN_PUBLIC_TABLET_ONLY')button.addEventListener('click',()=>external(profile.tabletUrl));
-  else{button.disabled=true;button.setAttribute('aria-label',app.name+': runtime license required');}
+  button.addEventListener('click',()=>{
+   const slot=$('appStatus');
+   slot.replaceChildren();
+   const note=document.createElement('small');
+   note.textContent=app.name+': '+app.detail+
+    '. This lightweight client does not assert that your native device, Continuum, or optional AI provider is enrolled.';
+   slot.append(note);
+  });
   list.append(button);
  }
 }
@@ -111,7 +120,7 @@ function renderShortcuts(){
 }
 function renderProfile(){
  $('instanceLabel').textContent=profile.instanceLabel;
- $('instanceState').textContent='Profile only · not enrolled';
+ $('instanceState').textContent='Customer Starter · Not enrolled';
  const form=$('profileForm');
  for(const key of ['instanceLabel','githubRepo','tabletUrl','bridgeHealthUrl'])form.elements.namedItem(key).value=profile[key];
  $('bridgeStatus').textContent='Not checked';
@@ -173,16 +182,7 @@ async function load(){
  renderAdapters();renderApps();renderShortcuts();renderProfile();
 }
 document.querySelectorAll('[data-view]').forEach(node=>node.addEventListener('click',()=>selectView(node.dataset.view)));
-$('openTablet').addEventListener('click',()=>external(profile.tabletUrl));
-$('previewTablet').addEventListener('click',()=>{
- const panel=$('previewPanel');panel.classList.toggle('hidden');
- if(!panel.classList.contains('hidden')){
-  if(profile.tabletUrl!==policy.DEFAULTS.tabletUrl){
-    panel.classList.add('hidden');announce('Customer-specific Tablet previews require frame policy qualification; open full Tablet instead');return;
-  }
-  $('tabletFrame').src=policy.DEFAULTS.tabletUrl;
- }
-});
+$('openTablet').addEventListener('click',()=>selectView('apps'));
 $('checkBridge').addEventListener('click',()=>void checkBridge());
 $('checkGitHub').addEventListener('click',()=>void checkGitHub());
 $('connectNative').addEventListener('click',()=>void connectNative());
@@ -196,7 +196,6 @@ $('openCourier').addEventListener('click',async()=>{
  }catch(err){announce('Courier unavailable: '+String(err.message||err).slice(0,90))}
 });
 $('openGitHub').addEventListener('click',()=>external('https://github.com/signup'));
-$('forkExtension').addEventListener('click',()=>external('https://github.com/4citeB4U/Leeway-Device-Extension/fork'));
 $('openRender').addEventListener('click',()=>external('https://dashboard.render.com/'));
 $('openRecovery').addEventListener('click',()=>external(policy.DEFAULTS.recoveryInfo));
 $('profileForm').addEventListener('submit',async event=>{
