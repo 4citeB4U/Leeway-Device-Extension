@@ -28,3 +28,24 @@ p{color:#bed2df;max-width:900px}a{color:#8adeef}a:focus-visible{outline:3px soli
 ol{padding-left:24px;max-width:860px}li{margin:10px 0}.developer{display:flex;flex-wrap:wrap;gap:18px}
 footer{color:#9fbacc;font-size:.8rem;border-top:1px solid #284357}
 @media(max-width:460px){header,main,footer{padding:20px 16px}.channels{grid-template-columns:1fr}}
+
+/* Qualified OS/browser setup. This is a display hint, not device admission. */
+.guided-setup{border:1px solid #416a7b;border-radius:14px;padding:22px;background:#10273a;margin:24px 0}
+.guided-setup h2{margin-top:0}
+.guided-setup fieldset{border:1px solid #365b70;border-radius:11px;padding:14px;margin:18px 0}
+.guided-setup legend{padding:0 8px;font-weight:700}
+.browser-choices{display:flex;flex-wrap:wrap;gap:10px}
+.browser-choice{display:inline-flex;align-items:center;gap:10px;border:1px solid #48778b;border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer;background:#153448}
+.browser-choice:has(input:checked){border-color:#83d9e5;background:#1b5264}
+.browser-choice input{width:19px;height:19px;accent-color:#70d5e6}
+.guided-setup button{min-height:46px;padding:12px 17px;border:1px solid #94d9e8;border-radius:9px;background:#287b8d;color:#fff;font:inherit;font-weight:750;cursor:pointer}
+.guided-setup button:disabled{opacity:.55;cursor:not-allowed}
+.hint{font-size:.88rem;color:#afcada}
+.setup-actions{max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;list-style:decimal;padding-left:20px}
+.setup-actions li{border:1px solid #355b6b;background:#162f42;border-radius:10px;padding:14px 16px;margin:0;min-height:150px}
+.setup-actions li p{font-size:.85rem;margin:5px 0}
+.setup-state,.setup-unavailable{display:block;font-size:.75rem;overflow-wrap:anywhere;margin-top:8px}
+.setup-state{color:#ecd39a;font-weight:700}
+.setup-actions a{display:inline-block;min-height:44px;padding:10px;border-radius:9px;background:#267d91;color:#fff;text-decoration:none;margin-top:8px}
+.setup-unavailable{color:#b6c7d4}
+@media(max-width:460px){.guided-setup{padding:16px}.setup-actions{grid-template-columns:1fr}}
