@@ -1,0 +1,91 @@
+{
+  "schema": "leeway.extension.distribution.v1",
+  "status": "NOT_PUBLISHED",
+  "developerRepository": "https://github.com/4citeB4U/Leeway-Device-Extension",
+  "releasesPage": "https://github.com/4citeB4U/Leeway-Device-Extension/releases",
+  "canonicalDeviceBridge": "https://github.com/4citeB4U/LEEWAY-DEVICE-BRIDGE",
+  "releaseVersion": "0.5.0",
+  "channels": [
+    {
+      "id": "chrome",
+      "title": "Chrome — desktop",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Apple"
+      ],
+      "distribution": "CHROME_WEB_STORE",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Chrome desktop extension. Requires original enrolled native Device Bridge host."
+    },
+    {
+      "id": "edge",
+      "title": "Edge — desktop",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Apple"
+      ],
+      "distribution": "EDGE_ADDONS",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Edge extension. Requires the approved native Bridge host and published Edge ID."
+    },
+    {
+      "id": "firefox",
+      "title": "Firefox — desktop / supported Android",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Android",
+        "Apple"
+      ],
+      "distribution": "MOZILLA_AMO",
+      "status": "SOURCE_BUILT_NOT_LISTED",
+      "storeUrl": null,
+      "notes": "Firefox compatibility and native-messaging capabilities require platform-specific testing; Android does not imply desktop host access."
+    },
+    {
+      "id": "safari",
+      "title": "Safari — Apple",
+      "platforms": [
+        "Apple"
+      ],
+      "distribution": "APPLE_APP_STORE",
+      "status": "CONTAINING_APP_NOT_SIGNED",
+      "storeUrl": null,
+      "notes": "Safari extension requires the original signed Apple containing app and Apple approval."
+    },
+    {
+      "id": "android-companion",
+      "title": "LeeWay Android companion",
+      "platforms": [
+        "Android"
+      ],
+      "distribution": "GOOGLE_PLAY_OR_APPROVED_SIGNED_APP",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "The Android companion carries Device Bridge capabilities; Chrome on Android cannot install desktop Chrome extensions."
+    },
+    {
+      "id": "apple-companion",
+      "title": "LeeWay Apple companion",
+      "platforms": [
+        "Apple"
+      ],
+      "distribution": "APPLE_APP_STORE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "The Apple companion and Safari integration require approved native build and device enrollment."
+    }
+  ],
+  "requirements": {
+    "ownerAuthentication": "EXISTING_ZITADEL_RUNTIME",
+    "deviceEnrollment": "SIGNED_DEVICE_PASSPORT_PER_DEVICE",
+    "appState": "CANONICAL_RUNTIME_CONTINUUM_NOT_BROWSER_STORAGE",
+    "display": "AGENT_VIRTUAL_TABLET",
+    "installationPolicy": "UNAVAILABLE_UNTIL_NATIVE_DEVICE_BRIDGE_QUALIFIED",
+    "publishGate": "INDEPENDENT_RELEASE_EVIDENCE_AND_STORE_APPROVAL_REQUIRED"
+  }
+}
