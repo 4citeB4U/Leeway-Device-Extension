@@ -22,8 +22,7 @@ source, dist = root / 'extension', root / 'dist'
 dist.mkdir(exist_ok=True)
 generate(source / 'icons')
 files = [
-    'browser-polyfill.js', 'bridge-session-contract.js', 'background.js', 'content-courier.js',
-    'floating-tablet.js',
+    'browser-polyfill.js', 'bridge-session-contract.js', 'background.js',
     'operating-system.html', 'operating-system.css', 'operating-system.js'
 ] + [f'icons/leeway-{size}.png' for size in SIZES]
 # Public customer bundle is allowlisted; the Creator Golden Master,
@@ -33,7 +32,7 @@ assert all((source / name).is_file() for name in files)
 assert all(not name.startswith('/') and '..' not in Path(name).parts and
            not name.endswith(('.pem','.key','.p8','.onnx','.gguf','.db','.sqlite','.pt')) for name in files)
 assert set(files)=={
- 'browser-polyfill.js','bridge-session-contract.js','background.js','content-courier.js','floating-tablet.js',
+ 'browser-polyfill.js','bridge-session-contract.js','background.js',
  'operating-system.html',
  'operating-system.css','operating-system.js',
  *[f'icons/leeway-{size}.png' for size in SIZES]
@@ -54,6 +53,8 @@ for browser, manifest_name in (
     assert 'host_permissions' not in manifest
     assert 'nativeMessaging' in manifest['permissions']
     assert 'storage' not in manifest['permissions']
+    assert 'activeTab' not in manifest['permissions']
+    assert 'scripting' not in manifest['permissions']
     assert 'content_scripts' not in manifest
     if browser in ('chrome', 'edge'):
         assert manifest['side_panel']['default_path'] == 'operating-system.html'
