@@ -28,6 +28,10 @@ test('Creator console has four device slots, owner-only pairing, copy/email invi
  assert.match(js,/\/api\/creator\/invitations/);
  assert.match(js,/masterRoleGranted!==false/);
  assert.match(js,/mailto:\?/);
+ assert.match(html,/id="copyPair" disabled/);
+ assert.match(html,/id="emailPair" disabled/);
+ assert.match(js,/navigator\.clipboard\.writeText\(pairUrl\)/);
+ assert.match(js,/Do not forward this pairing link to a customer/);
  assert.match(js,/CREATOR_CONSOLE_IDENTITY_UNVERIFIED/);
  assert.doesNotMatch(js,/localStorage|sessionStorage|privateKey|eval\(/);
 });
