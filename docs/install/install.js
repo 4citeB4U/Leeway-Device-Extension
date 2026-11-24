@@ -44,7 +44,7 @@ LICENSE = Existing repository terms.
    const path=parsed.pathname;
    const acceptable=channel.id==='chrome'?/^\/(?:detail|webstore\/detail)\//.test(path):
      channel.id==='edge'?/^\/addons\/detail\//.test(path):
-     channel.id==='firefox'?/^\/(?:[a-z-]+\/)?firefox\/addon\//.test(path):
+     channel.id==='firefox'?/^\/(?:[a-zA-Z-]+\/)?firefox\/addon\//.test(path):
      channel.id==='android-companion'?path==='/store/apps/details'&&parsed.searchParams.has('id'):
      /^\/[a-z-]+\/app\//.test(path)||/^\/app\//.test(path);
    if(!acceptable)return null;
