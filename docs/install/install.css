@@ -1,0 +1,30 @@
+/*
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.DEVICE_EXTENSION.GITHUB_DISTRIBUTION.STYLES
+TAG: LEEWAY.DEVICE_EXTENSION.SIX_CHANNEL_INSTALL_STYLES.V1
+5WH:
+WHAT = Accessible compact channel directory across phone, tablet, laptop and desktop sizes.
+WHY = Original LeeWay Device Bridge needs a readable installation hub on every device.
+WHO = Creator-authorized distribution maintainers.
+WHERE = docs/install/install.css.
+WHEN = 2026-11-24.
+HOW = CSS-only responsive layout and semantic browser-store links.
+LICENSE = Existing repository terms.
+*/
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:#07131e;color:#eef7ff}
+*{box-sizing:border-box}body{margin:0}header,main,footer{padding:28px max(18px,calc((100vw - 1100px)/2))}
+header{background:radial-gradient(ellipse at 100% 0,#18445b 0,transparent 65%),#0b1a29;border-bottom:1px solid #22435b}
+.mast{display:flex;align-items:center;gap:12px}.mast div{display:grid}.mast span:not(.coin){font-size:.78rem;color:#a5c2d2}
+.coin{display:grid;place-items:center;width:44px;height:44px;background:#112f3e;border:2px solid #75cfda;border-radius:50%;font-weight:800;font-size:1.35rem}h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.2;max-width:880px;margin:28px 0 14px}
+h2{font-size:1.35rem;margin:30px 0 10px}h3{font-size:1rem;margin:0 0 6px}
+p{color:#bed2df;max-width:900px}a{color:#8adeef}a:focus-visible{outline:3px solid #89e3f3;outline-offset:4px}
+.notice,.limits{border:1px solid #3b667b;border-radius:12px;padding:14px;background:#143042}
+.notice strong{color:#fff}.channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:20px}
+.channel{background:#14283a;border:1px solid #335468;border-radius:13px;padding:18px;min-height:190px;display:flex;flex-direction:column}
+.status{color:#c9e6ed;font-weight:600;font-size:.85rem;margin:0}.detail{font-size:.9rem;flex:1}
+.channel a,.unavailable{display:inline-block;margin-top:10px;border-radius:9px;padding:11px 14px;font-weight:650;text-decoration:none;min-height:44px}
+.channel a{background:#257987;color:#fff}.channel a:hover{background:#308e9b}
+.unavailable{background:#253641;color:#c5d0d7}
+ol{padding-left:24px;max-width:860px}li{margin:10px 0}.developer{display:flex;flex-wrap:wrap;gap:18px}
+footer{color:#9fbacc;font-size:.8rem;border-top:1px solid #284357}
+@media(max-width:460px){header,main,footer{padding:20px 16px}.channels{grid-template-columns:1fr}}
