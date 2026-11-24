@@ -6,7 +6,13 @@
   "description": "Cloud-first LeeWay Operating System right-side Tablet launcher with optional enrolled Device Bridge native-host courier.",
   "minimum_chrome_version": "116",
   "action": {
-    "default_title": "LeeWay Operating System"
+    "default_title": "LeeWay Operating System",
+    "default_icon": {
+      "16": "icons/leeway-16.png",
+      "32": "icons/leeway-32.png",
+      "48": "icons/leeway-48.png",
+      "128": "icons/leeway-128.png"
+    }
   },
   "permissions": [
     "activeTab",
@@ -26,5 +32,11 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://4citeb4u.github.io;"
+  },
+  "icons": {
+    "16": "icons/leeway-16.png",
+    "32": "icons/leeway-32.png",
+    "48": "icons/leeway-48.png",
+    "128": "icons/leeway-128.png"
   }
 }
