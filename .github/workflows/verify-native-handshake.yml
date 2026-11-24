@@ -14,6 +14,8 @@ on:
   pull_request:
     paths:
       - 'extension/**'
+      - 'docs/release-catalog.json'
+      - 'docs/install/**'
       - 'creator/**'
       - 'join/**'
       - 'tests/**'
@@ -46,6 +48,8 @@ jobs:
           node --check provisioning/tenant-install-plan.mjs
           node --check tests/native-handshake.test.mjs
           node --check tests/bridge-session-contract.test.mjs
+          node --check docs/install/install.js
+          node --check tests/distribution-catalog.test.mjs
           node --check tests/operating-policy.test.mjs
           node --check tests/tenant-install-plan.test.mjs
           node --check creator/creator-console.js
@@ -54,7 +58,7 @@ jobs:
           node --check tests/creator-join-source.test.mjs
       - name: Source negative tests
         run: npm test
-      - name: Deterministic Chromium Chrome, Edge and Firefox source packages
+      - name: Deterministic Chrome, Edge and Firefox source packages
         run: python3 scripts/package-extension.py
       - name: Upload blocked source candidates (NOT installable until native Bridge admission)
         uses: actions/upload-artifact@v4
