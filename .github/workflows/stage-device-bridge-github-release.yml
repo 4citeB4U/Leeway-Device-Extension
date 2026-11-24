@@ -1,0 +1,75 @@
+# LEEWAY HEADER — DO NOT REMOVE
+# REGION: LEEWAY.DEVICE_EXTENSION.GITHUB_DEVELOPER_RELEASE
+# TAG: LEEWAY.DEVICE_EXTENSION.GITHUB_DRAFT_RELEASE_V1
+# 5WH:
+# WHAT = Stage reproducible Chrome/Edge/Firefox developer ZIPs and hashes in the original GitHub Releases.
+# WHY = Developers should retrieve versioned source packages from GitHub, not ephemeral ChatGPT downloads.
+# WHO = Creator-controlled original GitHub repository maintainers.
+# WHERE = .github/workflows/stage-device-bridge-github-release.yml.
+# WHEN = 2026-11-24.
+# HOW = Explicit owner dispatch from reviewed main; all source tests; GitHub DRAFT + PRERELEASE only.
+# LICENSE = Existing repository terms; this workflow cannot publish to browser stores.
+name: Stage LeeWay Device Bridge GitHub Developer Release
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'New unique tag, e.g. leeway-device-bridge-v0.5.0-rc1'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: leeway-device-bridge-github-draft-release
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate the exact code and requested draft release version
+        run: |
+          python3 - <<'PY'
+          import json,os,re
+          version=json.load(open('extension/manifest.json',encoding='utf8'))['version']
+          tag=os.environ['RELEASE_TAG']
+          if not re.fullmatch('leeway-device-bridge-v'+re.escape(version)+r'-rc[0-9]+',tag):
+              raise SystemExit('LEEWAY_RELEASE_TAG_MUST_MATCH_CURRENT_VERSION_RC')
+          PY
+          node --check extension/background.js
+          node --test tests/distribution-catalog.test.mjs
+          npm test
+      - name: Package all reviewed browser extension source candidates
+        run: python3 scripts/package-extension.py
+      - name: Stage DRAFT GitHub release only; never auto-publish or impersonate store signing
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'LEEWAY_RELEASE_TAG_ALREADY_EXISTS'; exit 1
+          fi
+          cat > "$RUNNER_TEMP/RELEASE-NOTES.txt" <<'NOTES'
+          LEEWAY DEVICE BRIDGE — REVIEWED DEVELOPER SOURCE CANDIDATES
+          DRAFT / PRERELEASE — NOT A WORKING DEVICE BRIDGE INSTALLATION
+          Requires original approved native host, production signer, trusted device
+          enrollment, authenticated outbound transport, qualified full Tablet session,
+          physical Chrome/Edge/Firefox acceptance and vendor-store review.
+          Do not offer these source ZIPs as consumer installers.
+          The complete source is in 4citeB4U/Leeway-Device-Extension.
+          NOTES
+          gh release create "$RELEASE_TAG" \
+            --target "$GITHUB_SHA" --draft --prerelease \
+            --title "LeeWay Device Bridge $RELEASE_TAG — Developer Source (HOLD)" \
+            --notes-file "$RUNNER_TEMP/RELEASE-NOTES.txt" \
+            dist/leeway-device-bridge-chrome-BLOCKED-NOT-INSTALLABLE.zip \
+            dist/leeway-device-bridge-edge-BLOCKED-NOT-INSTALLABLE.zip \
+            dist/leeway-device-bridge-firefox-BLOCKED-NOT-INSTALLABLE.zip \
+            dist/SHA256SUMS.json
