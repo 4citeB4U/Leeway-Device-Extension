@@ -88,3 +88,16 @@ test('release cannot bypass canonical native Bridge snapshot or launch the publi
  assert.doesNotMatch(background,/LEEWAY_SHARE_SELECTION|LEEWAY_OPEN_COURIER|scripting\.executeScript/);
  assert.doesNotMatch(packager,/\'operating-policy\.js\',\'service-retry\.js\'/);
 });
+
+test('customer and Creator use the same authenticated extension to open their existing Tablet CRM ERP app',()=>{
+ const html=read('operating-system.html');
+ const ui=read('operating-system.js');
+ assert.match(html,/id="openTablet"/);
+ assert.match(html,/id="openBusiness"/);
+ assert.match(html,/Open my CRM \/ ERP in Tablet/);
+ assert.match(ui,/openTablet\('erpCrm'\)/);
+ assert.match(ui,/searchParams\.set\('view','erpCrm'\)/);
+ assert.match(ui,/await connectBridge\(\)/);
+ assert.doesNotMatch(ui,/localStorage|sessionStorage|customer\.verifiedEmail|customer\.deviceCommands/);
+ assert.equal(manifest.host_permissions,undefined);
+});
