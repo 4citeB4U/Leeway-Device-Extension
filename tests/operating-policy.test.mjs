@@ -28,6 +28,7 @@ test('portable four-OS catalog and cloud-first unbound launcher',()=>{
  assert.equal(P.DEFAULTS.tabletUrl,null);
  assert.equal(P.DEFAULTS.bridgeHealthUrl,null);
  assert.equal(P.DEFAULTS.githubRepo,null);
+ assert.equal(P.DEFAULTS.recoveryInfo,null);
  assert.equal(P.EDITION,'CUSTOMER_STARTER');
  const fresh=P.normalizeProfile({});
  assert.equal(fresh.githubRepo,null);
