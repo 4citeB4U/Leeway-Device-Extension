@@ -41,7 +41,9 @@ jobs:
       - name: Verify official store link allowlist and denied release catalog
         run: |
           node --check docs/install/install.js
-          node --test tests/distribution-catalog.test.mjs
+          node --check docs/install/setup-policy.js
+          node --check docs/install/setup.js
+          node --test tests/distribution-catalog.test.mjs tests/setup-policy.test.mjs
   deploy:
     needs: validate
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
