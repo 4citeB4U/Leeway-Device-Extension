@@ -85,7 +85,11 @@ async function connectBridge(){
   $('connectBridge').disabled=false;
  }
 }
-function openTablet(){
+async function openTablet(){
+ if(!snapshot||$('openTablet').disabled)return;
+ // An old browser session is not a current native owner/device admission.
+ // Revalidate against the original host and physical device on every launch.
+ await connectBridge();
  if(!snapshot||$('openTablet').disabled)return;
  const url=snapshot.tabletUrl;
  // Opening the real owner-authorized Tablet is a display action only;
@@ -102,7 +106,7 @@ async function disconnect(){
  announce('Device Bridge browser session closed. No native enrollment or owner data was deleted.');
 }
 $('connectBridge').addEventListener('click',()=>void connectBridge());
-$('openTablet').addEventListener('click',openTablet);
+$('openTablet').addEventListener('click',()=>void openTablet());
 $('disconnect').addEventListener('click',()=>void disconnect());
 // One session probe when the owner opens the installed extension; no background
 // polling, screen scraping, URL-field setup or automatic native command dispatch.
