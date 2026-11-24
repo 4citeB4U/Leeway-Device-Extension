@@ -15,6 +15,7 @@ LICENSE = Existing repository terms apply.
 'use strict';
 const $=id=>document.getElementById(id);
 let code=null,csrf=null;
+const installPolicy=globalThis.LeeWayCreatorMobileInstall;
 function status(s){$('status').textContent=String(s).slice(0,250)}
 async function api(path,body){
  if(!path.startsWith('/api/creator/pairing/'))throw Error('PAIR_PATH_INVALID');
@@ -29,6 +30,20 @@ async function api(path,body){
  if(!data||typeof data!=='object'||JSON.stringify(data).length>8192)
   throw Error('CREATOR_PAIR_RESPONSE_INVALID');
  return data;
+}
+function showPublishedInstaller(data){
+ const anchor=$('nativeInstaller');
+ anchor.hidden=true;anchor.removeAttribute('href');
+ const family=installPolicy?.familyFromUserAgent(navigator.userAgent);
+ if(!family){$('installState').textContent='Open this link on an Android or Apple phone to check its release.';return}
+ const installer=installPolicy.choosePublishedInstaller(data.mobileInstallers,navigator.userAgent,location.origin);
+ if(!installer){
+  $('installState').textContent=family+' signed companion is not published or verified by this Runtime. No download offered.';
+  return;
+ }
+ anchor.href=installer.url;anchor.textContent=installer.label+' · version '+installer.version;
+ anchor.hidden=false;
+ $('installState').textContent='Runtime reports a published Creator companion. Your OS must still verify its signed package. Installation does not enroll this device.';
 }
 async function start(){
  const params=new URLSearchParams(location.hash.slice(1));
@@ -45,6 +60,7 @@ async function start(){
     typeof data.csrf!=='string'||data.csrf.length<24)
     throw Error('CREATOR_PAIRING_NOT_CONFIGURED');
   csrf=data.csrf;
+  showPublishedInstaller(data);
   $('continue').disabled=false;
   status('Ready to verify the Creator sign-in. No device has been enrolled yet.');
  }catch(e){code=null;status('Creator pairing is not available: '+String(e.message||e))}
