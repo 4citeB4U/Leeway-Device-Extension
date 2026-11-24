@@ -20,6 +20,32 @@ This is the **public product home** for the single LeeWay Universal Device Exten
 
 > **Current release status: NOT INSTALLED / NOT PRODUCTION-QUALIFIED.** This repository was originally empty. Its homepage and future packaging are not proof of a signed extension or native-host enrollment. **Do not install unsigned development artifacts as a trusted production client.**
 
+## CUSTOMER_STARTER — not the Creator Golden Master
+
+This public browser bundle ships only the owner-scoped **Digital Brain**, **Continuum** and **LeeWay Diagnostics** entrypoints plus optional user-owned local AI binding. Creator administration, Machine Consciousness, hosted model weights, employee dispatch and full Tablet assets **are not distributed** in the customer extension. The allowed browser archive is nine audited files, capped at 256 KiB compressed. Actual registered device access still requires a separate signed native host and canonical Runtime grants.
+
+A first-run customer has **no default Creator GitHub repo, Tablet URL, Bridge URL or recovery destination**. These must resolve to that customer's approved project after server-side identity enrollment; a local profile or button cannot confer authority. The existing hosted full Tablet is not opened by the starter launcher. Customer-facing delivery should be a normal signed browser-store installation or web Tablet entry, not a manually extracted ZIP.
+
+The original Golden Master remains outside this public artifact. **Enforcement is server-side, not merely UI:** [Runtime PR #198](https://github.com/4citeB4U/Leeway-Runtime-Fabric/pull/198) contains a source-only customer capability guard, not yet attached to live routes. Primary-PC acceptance must use a fresh customer identity/browser profile and must not overwrite the Creator installation.
+
+Full product separation, first-device acceptance, and open-source/ownership boundaries: [Customer Starter vs Creator Golden Master](docs/CUSTOMER-SEED-VS-CREATOR-MASTER-V1.md).
+
+## LeeWay Operating System sidebar candidate (November 23, 2026)
+
+The Creator-authorized product name for the new right-hand button is **LeeWay Operating System**. This is a stacked source continuation on the existing native-handshake PR #3, not a replacement Device Bridge or a second Tablet.
+
+- `extension/operating-system.html` + `operating-system.js/css`: responsive **customer-only** right-side starter Tablet, customer-bound public Bridge/GitHub checks, personal HTTPS shortcuts and optional enrolled native courier. No unrestricted Creator Tablet launch.
+- `extension/operating-policy.js`: four-family OS labels, safe public tenant endpoints and employee export **LOCKED** pending signed Creator license plus Runtime admission.
+- `extension/manifest.json`: Chromium MV3 right-side `side_panel`. `extension/manifest.firefox.json`: Firefox MV3 `sidebar_action` plus event-page background. Neither grants ambient website access; exact public health/GitHub origins need direct user approval.
+- `provisioning/tenant-install-plan.mjs`: reproducible **source-only** customer-owned GitHub/Render installation checklist. It rejects Creator impersonation, tokens and private setup duplication, and never provisions paid resources.
+- `scripts/package-extension.py`: deterministic, **unsigned** Chromium/Firefox source candidates with SHA-256 checksums; not signed, store-published or production-installed.
+
+Full architectural and acceptance boundaries: [LeeWay Operating System universal instance V1](docs/LEEWAY-OPERATING-SYSTEM-UNIVERSAL-INSTANCE-V1.md).
+
+The **Creator instance is not a public account template**. Customers must use their own authenticated GitHub and free hosting account, tenant-specific owner identity and Continuum custody. GitHub source recovery does not restore private data by itself. Outbound digital employee deployment requires a revocable Creator-issued, Runtime-enforced license; the browser can never issue one.
+
+**Status:** `SOURCE_IMPLEMENTED` once checked into the review branch; source CI, browser install, GitHub OAuth, customer instance provisioner, native OS adapters, full-device-loss recovery and Veritas-qualified deployment are separate gates.
+
 ## Reconciled extension source candidate
 
 `extension/` now contains one **source candidate**: Device Bridge draft PR #121's fail-closed, explicit-user-action courier model combined with draft PR #120's deterministic package pattern. It uses the one current installer identity, `com.leewayindustries.device_bridge`; the conflicting `org.leeway.device_bridge` identifier is not shipped.

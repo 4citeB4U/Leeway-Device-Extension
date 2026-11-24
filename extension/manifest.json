@@ -1,11 +1,30 @@
 {
   "manifest_version": 3,
-  "name": "LeeWay Universal Device Extension",
-  "short_name": "LeeWay",
-  "version": "0.3.0",
-  "description": "Owner-initiated browser courier for an enrolled LeeWay Device Bridge native host.",
+  "name": "LeeWay Operating System",
+  "short_name": "LeeWay OS",
+  "version": "0.4.0",
+  "description": "Cloud-first LeeWay Operating System right-side Tablet launcher with optional enrolled Device Bridge native-host courier.",
   "minimum_chrome_version": "116",
-  "action": { "default_title": "Open LeeWay" },
-  "permissions": ["activeTab", "scripting", "nativeMessaging"],
-  "background": { "service_worker": "background.js" }
+  "action": {
+    "default_title": "LeeWay Operating System"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "nativeMessaging",
+    "storage",
+    "sidePanel"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "side_panel": {
+    "default_path": "operating-system.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://4citeb4u.github.io;"
+  }
 }

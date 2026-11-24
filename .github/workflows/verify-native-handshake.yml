@@ -1,20 +1,24 @@
 # LEEWAY HEADER — DO NOT REMOVE
 # REGION: LEEWAY.DEVICE_EXTENSION.HANDSHAKE.CI
-# TAG: LEEWAY.W01.EXTENSION.HANDSHAKE.CI.V1
+# TAG: LEEWAY.W01.OPERATING_SYSTEM.EXTENSION.CI.V2
 # 5WH:
-# WHAT = Qualify the actual browser native-handshake implementation with negative tests on each review.
+# WHAT = Qualify the native handshake, Operating System sidebar, tenant profile and unsigned browser packaging on each review.
 # WHY = Reject uncorrelated host messages, stale sessions and cross-origin browser launch bypasses.
 # WHO = Creator-authorized W01 contributor; GitHub Actions is test evidence, not Veritas.
 # WHERE = .github/workflows/verify-native-handshake.yml.
 # WHEN = 2026-11-19.
-# HOW = Node syntax, source tests and VM-simulated native port tests.
+# HOW = Node syntax, VM-simulated native port/tenant negative tests and deterministic unsigned Chrome/Firefox ZIPs.
 # LICENSE = Existing repository terms apply.
 name: W01 Extension Native Handshake Source Tests
 on:
   pull_request:
     paths:
       - 'extension/**'
+      - 'creator/**'
+      - 'join/**'
       - 'tests/**'
+      - 'provisioning/**'
+      - 'scripts/package-extension.py'
       - '.github/workflows/verify-native-handshake.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +38,29 @@ jobs:
           node --check extension/background.js
           node --check extension/content-courier.js
           node --check extension/floating-tablet.js
+          node --check extension/operating-policy.js
+          node --check extension/service-retry.js
+          node --check tests/service-retry.test.mjs
+          node --check extension/operating-system.js
+          node --check provisioning/tenant-install-plan.mjs
           node --check tests/native-handshake.test.mjs
+          node --check tests/operating-policy.test.mjs
+          node --check tests/tenant-install-plan.test.mjs
+          node --check creator/creator-console.js
+          node --check creator/connect/connect.js
+          node --check join/join.js
+          node --check tests/creator-join-source.test.mjs
       - name: Source negative tests
         run: npm test
+      - name: Deterministic unsigned Chrome and Firefox source packages
+        run: python3 scripts/package-extension.py
+      - name: Upload unsigned source candidates (NOT production installed)
+        uses: actions/upload-artifact@v4
+        with:
+          name: leeway-operating-system-UNSIGNED-source
+          path: |
+            dist/leeway-operating-system-chromium-UNSIGNED.zip
+            dist/leeway-operating-system-firefox-UNSIGNED.zip
+            dist/SHA256SUMS.json
+          if-no-files-found: error
+          retention-days: 7

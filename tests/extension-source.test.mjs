@@ -21,7 +21,10 @@ const read = name => readFileSync(path.join(root, 'extension', name), 'utf8');
 const manifest = JSON.parse(read('manifest.json'));
 test('uses explicit user activation and no ambient website permissions', () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'nativeMessaging', 'scripting']);
+  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'nativeMessaging', 'scripting', 'sidePanel', 'storage']);
+  assert.deepEqual(manifest.optional_host_permissions, ['https://*/*']);
+  assert.equal(manifest.side_panel.default_path, 'operating-system.html');
+  assert.equal(manifest.name, 'LeeWay Operating System');
   assert.equal(manifest.host_permissions, undefined);
   assert.equal(manifest.content_scripts, undefined);
 });
@@ -35,4 +38,16 @@ test('does not impersonate a runtime or evidence authority', () => {
   assert.match(source, /NATIVE_HOST_ACK_NOT_VERITAS/);
   assert.match(source, /NATIVE_HOST_NOT_AUTHENTICATED/);
   assert.doesNotMatch(source, /<all_urls>|localhost:43117|Access-Control-Allow-Origin/);
+});
+
+test('customer package never bundles a Creator Tablet entry or digital employee exports',()=>{
+ const html=read('operating-system.html');
+ const ui=read('operating-system.js');
+ const policy=read('operating-policy.js');
+ assert.match(html,/Customer Starter/);
+ assert.match(html,/Open my Tablet/);
+ assert.doesNotMatch(html,/Open full Tablet|Employee Deployment|Digital Employment Center|forkExtension|tabletFrame/);
+ assert.doesNotMatch(ui,/external\(profile\.tabletUrl\)|forkExtension|previewTablet/);
+ assert.doesNotMatch(policy,/access:'PUBLIC_LAUNCH'/);
+ assert.match(policy,/EDITION='CUSTOMER_STARTER'/);
 });

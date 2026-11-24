@@ -1,0 +1,74 @@
+/*
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.DEVICE_EXTENSION.OPERATING_SYSTEM
+TAG: LEEWAY.OPERATING_SYSTEM.SIDEBAR_STYLES.V1
+5WH:
+WHAT = Style one accessible responsive right-hand Operating System sidebar.
+WHY = Present application surfaces and their honest grant states clearly across browser widths.
+WHO = Creator-authorized outside GPT-6 source contributor.
+WHERE = extension/operating-system.css in 4citeB4U/Leeway-Device-Extension.
+WHEN = 2026-11-23.
+HOW = Native CSS layout, no external scripts/fonts, dark palette and real button states.
+LICENSE = Existing repository terms apply.
+*/
+:root{color-scheme:dark;font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#09111c;color:#edf3fb}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 100% 0%,#19395155,transparent 48%),#09111c}
+button,input{font:inherit}
+button{background:#193248;border:1px solid #365d72;color:#eff8ff;padding:9px 11px;border-radius:9px;cursor:pointer;transition:background .15s ease}
+button:hover{background:#264b63}
+button:focus-visible,input:focus-visible{outline:2px solid #85d9de;outline-offset:3px}
+button:disabled{opacity:.55;cursor:not-allowed;background:#202a36;border-color:#354353}
+button.primary{background:#166870;border-color:#2c9298}
+button.primary:hover{background:#237c85}
+.mast{display:flex;gap:12px;align-items:center;padding:19px 15px 13px;border-bottom:1px solid #ffffff17}
+.coin{height:40px;min-width:40px;display:grid;place-items:center;border-radius:50%;border:2px solid #83d7d7;box-shadow:0 0 0 3px #1d3a4a;background:#102434;font-size:21px;font-weight:800}
+h1{font-size:17px;line-height:1.2;margin:0;letter-spacing:.01em}
+h2{font-size:14px;margin:22px 0 10px;letter-spacing:.01em}
+p{margin:7px 0 11px}
+.mast p{font-size:11px;margin:4px 0 0;color:#aec6d6}
+.instance{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 15px}
+.instance div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.instance strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+small,.muted{font-size:12px;color:#aac1d0}
+.instance small{font-size:9px;letter-spacing:.11em;color:#93aebd}
+.tag{font-size:10px;border:1px solid #62656b;padding:4px 7px;color:#c5cbcf;border-radius:40px;white-space:nowrap}
+.tabs{display:flex;padding:0 13px;border-bottom:1px solid #ffffff22;gap:4px}
+.tabs button{flex:1;border:none;background:transparent;border-radius:0;padding:9px 6px;color:#a8c3d4;border-bottom:2px solid transparent}
+.tabs button[aria-current="page"]{border-bottom-color:#77dadd;color:white}
+main{padding:2px 15px 24px}
+.hero{background:linear-gradient(135deg,#143c4a,#122534);border:1px solid #2b6675;border-radius:15px;padding:15px;margin-top:13px}
+.hero h2{font-size:17px;margin:0 0 6px}
+.hero p{font-size:12px;color:#c7d6dc}
+.actions{display:flex;gap:8px;flex-wrap:nowrap}
+.actions button{flex:1}
+.actions.wrap{flex-wrap:wrap}
+.preview{margin-top:11px;padding:10px;border-radius:12px;background:#162533;border:1px solid #476274}
+.preview p{font-size:11px;color:#a9c2d1}
+.preview iframe{display:block;width:100%;height:min(72vh,720px);border:0;background:#111d2b}
+.status-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#121e2c;border:1px solid #2b3d50;border-radius:12px;margin:8px 0}
+.status-box div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.status-box small{line-height:1.3;overflow-wrap:anywhere}
+.status-box button{font-size:12px;min-width:92px}
+.adapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.adapter{padding:10px;border:1px solid #2a4156;border-radius:10px;background:#122333;display:flex;flex-direction:column;gap:4px}
+.adapter small{font-size:10px}
+.apps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.app{display:flex;flex-direction:column;gap:8px;text-align:left;min-height:102px;padding:12px;background:#122434;border:1px solid #305062;position:relative}
+.app .glyph{font-size:25px;line-height:1}
+.app strong{font-size:12px}
+.app small{font-size:10px}
+.app.locked{background:#171f2b}
+.app.locked small{color:#bca49c}
+.shortcuts{display:flex;flex-direction:column;gap:7px}
+.shortcut{display:flex;justify-content:space-between;gap:9px;align-items:center;padding:7px 10px;background:#162635;border-radius:9px}
+.shortcut>button:first-child{flex:1;text-align:left}
+.shortcut .remove{color:#f1bbb6}
+form{display:flex;flex-direction:column;gap:10px;margin:11px 0}
+label{display:flex;flex-direction:column;gap:4px;color:#b8cfdb;font-size:12px}
+input{width:100%;border-radius:8px;border:1px solid #456074;background:#0c1c2b;color:#eef8ff;padding:9px}
+.warning{background:#342521;border:1px solid #72533a;color:#ffe3b5;border-radius:9px;padding:11px}
+footer{padding:12px 15px 24px;border-top:1px solid #243648;display:flex;flex-direction:column;gap:8px}
+.hidden{display:none!important}
+@media(min-width:500px){.apps{grid-template-columns:repeat(3,minmax(0,1fr))}.adapters{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}

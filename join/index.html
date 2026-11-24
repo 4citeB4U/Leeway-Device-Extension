@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.OPERATING_SYSTEM.JOIN
+TAG: LEEWAY.CUSTOMER.OWNER_SIGNIN_JOIN_V1
+5WH:
+WHAT = Render a customer invitation landing page usable from phone, PC, Apple or Linux browser.
+WHY = A recipient should open one private link, accept terms and authorize their own account without any Creator credential or ZIP.
+WHO = Invited customer; canonical Runtime verifies invitation; outside contributor not Agent Lee.
+WHERE = join/index.html in Leeway-Device-Extension.
+WHEN = 2026-11-23.
+HOW = Browser-only presentation with secure same-origin OIDC handoff; no password collection, tracking or remote executable code.
+LICENSE = Existing repository terms apply.
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1520"><meta name="referrer" content="no-referrer">
+<title>Join LeeWay Operating System</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#091521;color:#f0f7fd}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at top right,#184a54,#091521 58%)}
+main{width:min(100%,510px);padding:27px 24px;border-radius:19px;border:1px solid #30586c;background:#122333;box-shadow:0 12px 55px #020c1488}
+.brand{display:flex;gap:11px;align-items:center;margin-bottom:18px}
+.logo{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;border:2px solid #82d7da;font-size:23px;font-weight:800}
+h1{font-size:26px;line-height:1.2;margin:0}h2{font-size:18px;margin:0 0 12px}p{color:#c5d8e3}
+small{color:#a7bfca}
+ul{padding-left:20px;color:#c4d6df}
+li{margin-bottom:7px}
+button{font:inherit;border-radius:9px;padding:13px 15px;border:1px solid #57a6ae;background:#16717b;color:white;width:100%;font-weight:650;cursor:pointer}
+button:hover{background:#1d8490}button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid #b0e5ef;outline-offset:3px}
+label{display:flex;gap:9px;align-items:flex-start;margin:18px 0;font-size:14px}
+input{margin-top:4px}
+#status{padding:11px;margin:12px 0;border:1px solid #806843;border-radius:9px;background:#32291f;color:#ffe6b4;font-size:13px;overflow-wrap:anywhere}
+footer{font-size:12px;color:#a8bfce;margin-top:20px}
+a{color:#9bdee7}.hidden{display:none!important}
+</style>
+<script defer src="join.js"></script>
+</head><body><main>
+<div class="brand"><div class="logo" aria-hidden="true">L</div><div><h1>Welcome to LeeWay</h1><small>Your own Operating System workspace</small></div></div>
+<h2>Your invitation</h2>
+<p>With LeeWay, your personal workspace connects your approved devices to Digital Brain, Continuum and LeeWay Diagnostics. Your projects and recovery belong to your account.</p>
+<ul><li>Your GitHub account holds your project and recovery references</li><li>Continuum manages your authorized working data</li><li>Internal agents are limited by your plan; external employee deployment is not included</li></ul>
+<p id="status" role="status">Checking whether customer enrollment is available…</p>
+<label><input type="checkbox" id="terms"><span>I agree to the published LeeWay Terms and Privacy Notice before creating my account. <span id="termsLinks">Terms and privacy documents must be published before sign-up is enabled.</span></span></label>
+<button type="button" id="join" disabled>Sign in and create my LeeWay</button>
+<p><small>No LeeWay password is requested here. Account sign-in happens through the verified identity provider. Creator privileges are never included with an invitation.</small></p>
+<footer>LeeWay Operating System · Customer Starter · No background tracking or downloaded Master source</footer>
+</main></body></html>

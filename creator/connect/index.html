@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+LEEWAY HEADER — DO NOT REMOVE
+REGION: LEEWAY.OPERATING_SYSTEM.CREATOR_DEVICE_CONNECT
+TAG: LEEWAY.CREATOR.DEVICE_JOIN.UI.V1
+5WH:
+WHAT = Creator-owned device pairing front door for PC, Android, Apple and Linux.
+WHY = Each of four devices needs its own secure enrollment, not a full Golden Master download or copied signing key.
+WHO = Authenticated Creator and qualified OS-native adapter.
+WHERE = creator/connect/index.html in Leeway-Device-Extension.
+WHEN = 2026-11-23.
+HOW = Private one-time pairing challenge; canonical owner login, consent, device passport and Bridge readback.
+LICENSE = Existing repository terms apply.
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Connect to My LeeWay Creator Master</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#0a1823;color:#eff9ff}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 65% 0%,#1d4a59,#0a1823 55%)}
+main{width:min(100%,530px);background:#122a38;border:1px solid #3a7182;border-radius:18px;padding:25px}
+h1{font-size:26px;line-height:1.2;margin:0 0 12px}
+p{color:#c2d5e0}
+button{background:#1a7783;color:white;border:1px solid #5bafb6;border-radius:10px;padding:13px;font:inherit;font-weight:600;width:100%}
+button:disabled{opacity:.6}
+#nativeInstaller{display:block;margin:10px 0;padding:12px;background:#164f5c;color:#fff;text-align:center;border:1px solid #5bafb6;border-radius:10px;font-weight:600;text-decoration:none}
+#nativeInstaller[hidden]{display:none}
+#installState{font-size:13px;color:#b1c7d0}small{color:#b1c7d0}
+#status{background:#322821;color:#ffe0b4;border:1px solid #866645;border-radius:9px;padding:12px;overflow-wrap:anywhere}
+</style>
+<script defer src="mobile-install-policy.js"></script>
+<script defer src="connect.js"></script>
+</head><body><main>
+<h1>Connect this device to LeeWay</h1>
+<p>Sign in using the <strong>same Creator identity</strong> used on the Master instance. This device receives its own approved Device Bridge identity and capabilities—never a copy of your signing keys.</p>
+<p id="status" role="status">Checking the pairing service…</p>
+<p id="installState" role="status">Signed mobile companion release not yet verified.</p>
+<a id="nativeInstaller" hidden target="_blank" rel="noopener noreferrer">Open native installer</a>
+<button id="continue" disabled>Verify my Creator account and device</button>
+<p><small>Pairing is single-use and expires. Local hardware access requires the device's genuine OS adapter and your approval. This page does not install native helpers or change system files.</small></p>
+</main></body></html>
