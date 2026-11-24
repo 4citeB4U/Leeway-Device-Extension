@@ -9,7 +9,7 @@
 # WHEN = 2026-11-19.
 # HOW = Node syntax, VM-simulated native port/tenant negative tests and deterministic unsigned Chrome/Firefox ZIPs.
 # LICENSE = Existing repository terms apply.
-name: W01 Extension Native Handshake Source Tests
+name: W01 Device Bridge Required Native Session Source Tests
 on:
   pull_request:
     paths:
@@ -35,6 +35,7 @@ jobs:
       - name: Syntax check
         run: |
           node --check extension/browser-polyfill.js
+          node --check extension/bridge-session-contract.js
           node --check extension/background.js
           node --check extension/content-courier.js
           node --check extension/floating-tablet.js
@@ -44,6 +45,7 @@ jobs:
           node --check extension/operating-system.js
           node --check provisioning/tenant-install-plan.mjs
           node --check tests/native-handshake.test.mjs
+          node --check tests/bridge-session-contract.test.mjs
           node --check tests/operating-policy.test.mjs
           node --check tests/tenant-install-plan.test.mjs
           node --check creator/creator-console.js
@@ -54,13 +56,13 @@ jobs:
         run: npm test
       - name: Deterministic unsigned Chrome and Firefox source packages
         run: python3 scripts/package-extension.py
-      - name: Upload unsigned source candidates (NOT production installed)
+      - name: Upload blocked source candidates (NOT installable until native Bridge admission)
         uses: actions/upload-artifact@v4
         with:
-          name: leeway-operating-system-UNSIGNED-source
+          name: leeway-device-bridge-BLOCKED-source
           path: |
-            dist/leeway-operating-system-chromium-UNSIGNED.zip
-            dist/leeway-operating-system-firefox-UNSIGNED.zip
+            dist/leeway-device-bridge-chromium-BLOCKED-NOT-INSTALLABLE.zip
+            dist/leeway-device-bridge-firefox-BLOCKED-NOT-INSTALLABLE.zip
             dist/SHA256SUMS.json
           if-no-files-found: error
           retention-days: 7
