@@ -19,12 +19,14 @@ LICENSE = Existing repository terms.
    firefox:['addons.mozilla.org'],
    safari:['apps.apple.com'],
    'android-companion':['play.google.com'],
-   'apple-companion':['apps.apple.com']
+   'apple-companion':['apps.apple.com'],
+   'windows-companion':[], 'linux-companion':[]
  });
  const distributions=Object.freeze({
    chrome:'CHROME_WEB_STORE',edge:'EDGE_ADDONS',firefox:'MOZILLA_AMO',
    safari:'APPLE_APP_STORE','android-companion':'GOOGLE_PLAY_OR_APPROVED_SIGNED_APP',
-   'apple-companion':'APPLE_APP_STORE'
+   'apple-companion':'APPLE_APP_STORE',
+   'windows-companion':'LEEWAY_SIGNED_NATIVE_RELEASE', 'linux-companion':'LEEWAY_SIGNED_NATIVE_RELEASE'
  });
  const publicationStatus=Object.freeze({
    PUBLISHED:'Available in official store',
@@ -51,7 +53,7 @@ LICENSE = Existing repository terms.
    return parsed.toString();
  }
  function validateCatalog(data){
-   const ids=['chrome','edge','firefox','safari','android-companion','apple-companion'];
+   const ids=['chrome','edge','firefox','safari','android-companion','apple-companion','windows-companion','linux-companion'];
    if(!data||data.schema!=='leeway.extension.distribution.v1'||!Array.isArray(data.channels)||
       data.channels.length!==ids.length)return false;
    if(data.channels.some((c,i)=>!c||c.id!==ids[i]||typeof c.title!=='string'||
@@ -69,8 +71,8 @@ LICENSE = Existing repository terms.
      const p=doc.createElement('p');p.textContent='No verified release information is available.';list.append(p);
      return false;
    }
-   const published=data.channels.filter(c=>c.status==='PUBLISHED').length;
-   overall.textContent=published===0?'No production browser or mobile channel published yet.':
+   const published=data.channels.filter(c=>c.status==='PUBLISHED'&&officialStoreUrl(c)).length;
+   overall.textContent=published===0?'No production browser or native companion channel published yet.':
      published+' of '+data.channels.length+' official channels published.';
    for(const c of data.channels){
      const card=doc.createElement('article');card.className='channel';
