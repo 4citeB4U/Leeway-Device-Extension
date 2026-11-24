@@ -68,7 +68,7 @@ function setup(options = {}) {
     return response;
   }
   function schedule(type, payload = undefined) {
-    return request(type,payload);
+    return panelRequest(type,payload);
   }
   async function panelRequest(type,payload){
     let response;
@@ -110,7 +110,7 @@ test('Chrome/Edge toolbar opens the original Bridge extension display without we
 });
 test('matching challenge allows only an acknowledged native session',async()=>{
   const f=setup();await openSession(f);
-  const status=await f.request('LEEWAY_STATUS');
+  const status=await f.panelRequest('LEEWAY_STATUS');
   assert.equal(status.result.connected,true);
 });
 test('wrong challenge rejects native handshake',async()=>{
@@ -133,39 +133,24 @@ test('two concurrent connects use one port and the same native challenge',async(
   f.ports[0].deliver(ownerAck(f.ports[0]));
   assert.equal((await first).ok,true);assert.equal((await second).ok,true);
 });
-test('selected text cannot be submitted without a qualified host',async()=>{
-  const f=setup();
-  const result=await f.request('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'Title',selection:'text'});
-  assert.match(result.error,/NATIVE_HOST_NOT_AUTHENTICATED/);
-});
-test('native receipt acknowledgement is not Veritas proof',async()=>{
-  const f=setup();const p=await openSession(f);
-  const awaitReceipt=f.schedule('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'Title',selection:'selected'});
-  await new Promise(resolve=>setImmediate(resolve));
-  const excerpt=p.sent[1];
-  assert.equal(excerpt.excerpt.selection,'selected');
-  p.deliver({type:'leeway.extension.receipt',requestId:excerpt.requestId,sessionId:excerpt.sessionId,accepted:true});
-  const result=await awaitReceipt;
-  assert.equal(result.result.authority,'NATIVE_HOST_ACK_NOT_VERITAS');
-});
-test('wrong native session receipt is ignored, then actual session receipt denies',async()=>{
-  const f=setup();const p=await openSession(f);
-  const wait=f.schedule('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'T',selection:'x'});
-  await new Promise(resolve=>setImmediate(resolve));
-  const excerpt=p.sent[1];
-  p.deliver({type:'leeway.extension.receipt',requestId:excerpt.requestId,sessionId:'wrong-session',accepted:true});
-  p.deliver({type:'leeway.extension.receipt',requestId:excerpt.requestId,sessionId:excerpt.sessionId,accepted:false});
-  assert.match((await wait).error,/NATIVE_REQUEST_REJECTED/);
-});
-test('native disconnect rejects pending operations and clears state',async()=>{
-  const f=setup();const p=await openSession(f);
-  const wait=f.schedule('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'T',selection:'x'});
-  await new Promise(resolve=>setImmediate(resolve));
-  p.close();
-  assert.match((await wait).error,/NATIVE_HOST_DISCONNECTED/);
-  assert.equal((await f.request('LEEWAY_STATUS')).result.connected,false);
-});
-test('a sender from another extension cannot call background actions',async()=>{
+test('webpage selection is not a Device Bridge privilege even before host authentication',async()=>{
+ const f=setup();
+ assert.equal(await f.request('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'Title',selection:'text'}),null);
+ assert.equal(f.ports.length,0);
+});test('webpage courier and forged selected text stay denied after an authenticated native hello',async()=>{
+ const f=setup();const p=await openSession(f);
+ assert.equal(await f.request('LEEWAY_SHARE_SELECTION',{href:'https://example.test/p',title:'Title',selection:'selected'}),null);
+ assert.equal(p.sent.length,1);
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
+});test('unsolicited native receipt cannot qualify an enrolled device or Tablet session',async()=>{
+ const f=setup();const p=await openSession(f);
+ p.deliver({type:'leeway.extension.receipt',requestId:'forged',sessionId:'wrong',accepted:true});
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
+});test('native disconnect clears the connected state without a page courier',async()=>{
+ const f=setup();const p=await openSession(f);
+ p.close();
+ assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.connected,false);
+});test('a sender from another extension cannot call background actions',async()=>{
   const f=setup();const result=await f.request('LEEWAY_CONNECT',undefined,'https://example.test','another-extension');
   assert.equal(result,null);assert.equal(f.ports.length,0);
 });
@@ -175,13 +160,13 @@ test('page selection from a different origin is denied',async()=>{
   assert.equal(result,null);
 });
 test('handshake transport error fails closed and does not produce a session',async()=>{
-  const f=setup({failSend:true});const result=await f.request('LEEWAY_CONNECT');
+  const f=setup({failSend:true});const result=await f.panelRequest('LEEWAY_CONNECT');
   assert.equal(result.ok,false);
   assert.match(result.error,/NATIVE_HELLO_SEND_FAILED/);
-  assert.equal((await f.request('LEEWAY_STATUS')).result.connected,false);
+  assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.connected,false);
 });
 test('unknown native host fails without claiming connected',async()=>{
-  const f=setup({failConnect:true});const result=await f.request('LEEWAY_CONNECT');
+  const f=setup({failConnect:true});const result=await f.panelRequest('LEEWAY_CONNECT');
   assert.match(result.error,/NATIVE_HOST_UNAVAILABLE/);
 });
 
