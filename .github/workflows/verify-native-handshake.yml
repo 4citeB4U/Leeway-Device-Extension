@@ -49,6 +49,8 @@ jobs:
           node --check tests/native-handshake.test.mjs
           node --check tests/bridge-session-contract.test.mjs
           node --check docs/install/install.js
+          node --check docs/install/setup-policy.js
+          node --check docs/install/setup.js
           node --check tests/distribution-catalog.test.mjs
           node --check tests/operating-policy.test.mjs
           node --check tests/tenant-install-plan.test.mjs
