@@ -84,7 +84,7 @@ const ownerAck = (port, changes={})=>({
   type:'leeway.extension.hello-ack',
   version:3,helloId:port.sent[0].helloId,
   authenticated:true,sessionId:'qualified-session-00001',
-  capabilities:['page.excerpt.submit'],...changes
+  capabilities:['device.bridge.discovery.read','tablet.session.open','page.excerpt.submit'],...changes
 });
 async function openSession(f) {
   const connecting=f.schedule('LEEWAY_CONNECT');
@@ -251,4 +251,15 @@ test('native disconnect clears previously qualified Bridge snapshot and rejects 
  assert.equal(failed.ok,false);
  assert.match(failed.error,/NATIVE_HOST_DISCONNECTED/);
  assert.equal((await f.panelRequest('LEEWAY_STATUS')).result.bridgeQualified,false);
+});
+
+test('page courier only or missing Tablet grant must NOT authenticate as the Device Bridge',async()=>{
+ for (const caps of [['page.excerpt.submit'],['device.bridge.discovery.read']]) {
+  const f=setup();const waiting=f.schedule('LEEWAY_CONNECT');
+  await new Promise(resolve=>setImmediate(resolve));
+  f.ports[0].deliver(ownerAck(f.ports[0],{capabilities:caps}));
+  const result=await waiting;
+  assert.equal(result.ok,false);
+  assert.match(result.error,/NATIVE_AUTHENTICATION_NOT_QUALIFIED/);
+ }
 });
