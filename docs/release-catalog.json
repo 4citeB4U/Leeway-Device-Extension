@@ -44,7 +44,7 @@
       "distribution": "MOZILLA_AMO",
       "status": "SOURCE_BUILT_NOT_LISTED",
       "storeUrl": null,
-      "notes": "Firefox compatibility and native-messaging capabilities require platform-specific testing; Android does not imply desktop host access."
+      "notes": "Desktop Firefox extension. Firefox Android add-ons cannot use this desktop nativeMessaging host; use the original Android companion for device connectivity."
     },
     {
       "id": "safari",
@@ -55,7 +55,7 @@
       "distribution": "APPLE_APP_STORE",
       "status": "CONTAINING_APP_NOT_SIGNED",
       "storeUrl": null,
-      "notes": "Safari extension requires the original signed Apple containing app and Apple approval."
+      "notes": "Apple macOS/iPhone/iPad Safari extension must be embedded and signed with the original qualified containing app."
     },
     {
       "id": "android-companion",
@@ -66,7 +66,7 @@
       "distribution": "GOOGLE_PLAY_OR_APPROVED_SIGNED_APP",
       "status": "SIGNED_RELEASE_NOT_VERIFIED",
       "storeUrl": null,
-      "notes": "The Android companion carries Device Bridge capabilities; Chrome on Android cannot install desktop Chrome extensions."
+      "notes": "Android signed companion provides the original Device Bridge and Tablet display. Chrome for Android cannot run desktop Chrome Web Store extensions; mobile Edge/Firefox native Bridge extensions are not qualified."
     },
     {
       "id": "apple-companion",
@@ -77,7 +77,29 @@
       "distribution": "APPLE_APP_STORE",
       "status": "SIGNED_RELEASE_NOT_VERIFIED",
       "storeUrl": null,
-      "notes": "The Apple companion and Safari integration require approved native build and device enrollment."
+      "notes": "Apple signed companion provides OS-native Bridge/Tablet; Safari browser integration requires the signed containing app. iOS Chrome/Edge/Firefox are not desktop extension hosts."
+    },
+    {
+      "id": "windows-companion",
+      "title": "LeeWay Windows Device Bridge",
+      "platforms": [
+        "Windows"
+      ],
+      "distribution": "LEEWAY_SIGNED_NATIVE_RELEASE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Original signed Windows Bridge installer; must register qualified Chrome/Edge/Firefox native-messaging hosts using official browser IDs after owner approval."
+    },
+    {
+      "id": "linux-companion",
+      "title": "LeeWay Linux Device Bridge",
+      "platforms": [
+        "Linux"
+      ],
+      "distribution": "LEEWAY_SIGNED_NATIVE_RELEASE",
+      "status": "SIGNED_RELEASE_NOT_VERIFIED",
+      "storeUrl": null,
+      "notes": "Original signed Linux Bridge installer/adapter; must register qualified native-messaging hosts with portable OS paths and device-scoped owner enrollment."
     }
   ],
   "requirements": {
