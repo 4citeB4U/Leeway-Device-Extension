@@ -27,6 +27,7 @@ LICENSE: Existing repository terms apply.
   const pending = new Map();
   const bridgePending = new Map();
   let bridgeSnapshot = null;
+  let nativeCapabilities = [];
 
   const status = () => ({
     connected: Boolean(port && sessionId),
@@ -43,6 +44,7 @@ LICENSE: Existing repository terms apply.
     port = null;
     sessionId = null;
     bridgeSnapshot = null;
+    nativeCapabilities = [];
     handshakeId = null;
     if (handshakeTimer) clearTimeout(handshakeTimer);
     handshakeTimer = null;
@@ -96,7 +98,7 @@ LICENSE: Existing repository terms apply.
             message.authenticated !== true || typeof message.sessionId !== 'string' ||
             !/^[A-Za-z0-9._:-]{8,128}$/.test(message.sessionId) ||
             !Array.isArray(message.capabilities) ||
-            !message.capabilities.includes('page.excerpt.submit')) {
+            Bridge.SESSION_CAPABILITIES.some(capability => !message.capabilities.includes(capability))) {
             reset('NATIVE_AUTHENTICATION_NOT_QUALIFIED');
             return;
           }
@@ -105,6 +107,7 @@ LICENSE: Existing repository terms apply.
           handshakeId = null;
           failHandshake = null;
           connectPromise = null;
+          nativeCapabilities = [...message.capabilities];
           sessionId = message.sessionId;
           resolve(status());
           return;
@@ -146,7 +149,7 @@ LICENSE: Existing repository terms apply.
           type: 'leeway.extension.hello',
           version: B.VERSION,
           helloId: expectedId,
-          requestedCapabilities: ['page.excerpt.submit']
+          requestedCapabilities: [...Bridge.SESSION_CAPABILITIES]
         });
       } catch {
         reset('NATIVE_HELLO_SEND_FAILED');
@@ -193,6 +196,7 @@ LICENSE: Existing repository terms apply.
 
   function share(payload) {
     if (!port || !sessionId) return Promise.reject(new Error('NATIVE_HOST_NOT_AUTHENTICATED'));
+    if (!nativeCapabilities.includes('page.excerpt.submit')) return Promise.reject(new Error('NATIVE_PAGE_EXCERPT_GRANT_REQUIRED'));
     let safe;
     try { safe = B.excerpt(payload); }
     catch (error) { return Promise.reject(error); }
