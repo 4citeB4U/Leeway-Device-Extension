@@ -22,8 +22,8 @@ source, dist = root / 'extension', root / 'dist'
 dist.mkdir(exist_ok=True)
 generate(source / 'icons')
 files = [
-    'browser-polyfill.js', 'background.js', 'content-courier.js',
-    'floating-tablet.js', 'operating-policy.js', 'service-retry.js',
+    'browser-polyfill.js', 'bridge-session-contract.js', 'background.js', 'content-courier.js',
+    'floating-tablet.js',
     'operating-system.html', 'operating-system.css', 'operating-system.js'
 ] + [f'icons/leeway-{size}.png' for size in SIZES]
 # Public customer bundle is allowlisted; the Creator Golden Master,
@@ -33,8 +33,8 @@ assert all((source / name).is_file() for name in files)
 assert all(not name.startswith('/') and '..' not in Path(name).parts and
            not name.endswith(('.pem','.key','.p8','.onnx','.gguf','.db','.sqlite','.pt')) for name in files)
 assert set(files)=={
- 'browser-polyfill.js','background.js','content-courier.js','floating-tablet.js',
- 'operating-policy.js','service-retry.js','operating-system.html',
+ 'browser-polyfill.js','bridge-session-contract.js','background.js','content-courier.js','floating-tablet.js',
+ 'operating-system.html',
  'operating-system.css','operating-system.js',
  *[f'icons/leeway-{size}.png' for size in SIZES]
 }
@@ -46,11 +46,13 @@ for browser, manifest_name in (
     manifest_bytes = (source / manifest_name).read_bytes()
     manifest = loads(manifest_bytes)
     assert manifest['manifest_version'] == 3
-    assert manifest['name'] == 'LeeWay Operating System'
+    assert manifest['name'] == 'LeeWay Device Bridge'
     assert manifest.get('icons') == {str(size): f'icons/leeway-{size}.png' for size in SIZES}
     assert manifest['action']['default_icon'] == manifest['icons']
-    assert 'https://*/*' in manifest['optional_host_permissions']
+    assert 'optional_host_permissions' not in manifest
     assert 'host_permissions' not in manifest
+    assert 'nativeMessaging' in manifest['permissions']
+    assert 'storage' not in manifest['permissions']
     assert 'content_scripts' not in manifest
     if browser == 'chromium':
         assert manifest['side_panel']['default_path'] == 'operating-system.html'
@@ -59,10 +61,10 @@ for browser, manifest_name in (
     else:
         assert manifest['sidebar_action']['default_panel'] == 'operating-system.html'
         assert manifest['background']['scripts'] == [
-            'browser-polyfill.js', 'background.js'
+            'browser-polyfill.js', 'bridge-session-contract.js', 'background.js'
         ]
         assert 'sidePanel' not in manifest['permissions']
-    name = 'leeway-operating-system-' + browser + '-UNSIGNED.zip'
+    name = 'leeway-device-bridge-' + browser + '-BLOCKED-NOT-INSTALLABLE.zip'
     archive = dist / name
     with ZipFile(archive, 'w', compression=ZIP_DEFLATED, compresslevel=9) as output:
         for target, payload in [('manifest.json', manifest_bytes)] + [
@@ -78,7 +80,7 @@ for browser, manifest_name in (
         assert len(proof.namelist()) == len(files) + 1
     artifacts[name] = sha256(archive.read_bytes()).hexdigest()
 (dist / 'SHA256SUMS.json').write_text(
-    dumps({'classification': 'UNSIGNED_SOURCE_NOT_INSTALLED_OR_PRODUCTION_QUALIFIED',
+    dumps({'classification': 'BLOCKED_SOURCE_ONLY_NATIVE_BRIDGE_NOT_LIVE_NOT_INSTALLABLE',
            'artifacts': artifacts}, indent=2) + '\n', encoding='utf8'
 )
 for name, digest in artifacts.items():
