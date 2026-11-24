@@ -34,6 +34,10 @@ LICENSE = Existing repository license decision governs; this note grants no dist
 
 **Customer rights:** retains customer-owned projects, local files, approved recovery data, personal Continuum export and permitted local AI after licensed hosted services are paused; revocation targets only the leased services and employees, not the customer's data.
 
+## Public source, product identity and legal boundary
+
+Actual GitHub repository metadata read during this source audit: **Leeway-Device-Extension is public; Leeway-Agent-Virtual-Tablet is public; LeeWay-Continuum is public with an MIT LICENSE; Leeway-Runtime-Fabric is private.** Customer packaging should exclude the private Creator Runtime source, signing keys and administrative services. Public source cannot be made inaccessible by merely revoking a browser button; existing copies permitted under a published open-source license remain governed by that license. A service lease can revoke **future access to hosted/leased services**, not retroactively delete customer copies of public code or customer-owned data. The Creator retains the separately protected brand, licensing, managed services and nonpublic authority implementations subject to applicable law and provenance. No existing repo visibility, license, or permissions were changed by this source work.
+
 ## Small delivery, no customer ZIP workflow
 
 1. **Browser/web entry:** a tenant-aware signed-in web Tablet is the primary entry point on Windows, Linux, Apple or Android; no full LeeWay source checkout or model download. It is **not yet deployed**.
