@@ -16,7 +16,7 @@ LICENSE = Existing repository terms apply.
 const $=id=>document.getElementById(id);
 const OS=['Microsoft Windows','Android','Apple','Linux'];
 const deviceNames=['Primary PC','Phone','Additional device 1','Additional device 2'];
-let csrf=null,connected=false,inviteUrl=null;
+let csrf=null,connected=false,inviteUrl=null,pairUrl=null;
 const status=message=>{$('banner').textContent=String(message).slice(0,240)};
 function verifyHttps(path,hashLabel){
  let u;try{u=new URL(path)}catch{throw Error('SERVER_LINK_INVALID')}
@@ -41,9 +41,10 @@ async function originalRuntimeJson(path,{method='GET',body=null}={}){
  return value;
 }
 function resetUI(){
- connected=false;csrf=null;inviteUrl=null;
+ connected=false;csrf=null;inviteUrl=null;pairUrl=null;
  $('issuePair').disabled=true;$('issueInvite').disabled=true;
  $('copyInvite').disabled=true;$('emailInvite').disabled=true;
+ $('copyPair').disabled=true;$('emailPair').disabled=true;
  const slots=$('deviceSlots');slots.replaceChildren();
  for(const name of deviceNames){
   const tile=document.createElement('div');tile.className='device';
@@ -85,6 +86,7 @@ async function bootstrap(){
 }
 $('issuePair').addEventListener('click',async()=>{
  if(!connected)return;
+ pairUrl=null;$('copyPair').disabled=true;$('emailPair').disabled=true;
  $('issuePair').disabled=true;
  try{
   const osFamily=$('osFamily').value;
@@ -93,12 +95,27 @@ $('issuePair').addEventListener('click',async()=>{
     method:'POST',body:{osFamily}
   });
   if(data?.noMasterSigningKeyTransfer!==true)throw Error('CREATOR_PAIR_RESPONSE_UNVERIFIED');
-  const url=verifyHttps(data.joinUrl,'pair');
+  pairUrl=verifyHttps(data.joinUrl,'pair');
+  const url=pairUrl;
+  $('copyPair').disabled=false;$('emailPair').disabled=false;
   const output=$('pairResult');output.classList.remove('hidden');
   output.textContent='Open on the device you are enrolling, then sign in as Creator and approve its real adapter: '+url;
   status('Owner-only pairing challenge created. Device is NOT enrolled until original Bridge readback.');
  }catch(e){status('Pairing not issued: '+String(e.message||e));}
  finally{$('issuePair').disabled=!connected;}
+});
+$('copyPair').addEventListener('click',async()=>{
+ if(!pairUrl||!connected)return;
+ try{await navigator.clipboard.writeText(pairUrl);
+  status('Creator device link copied. Open only on your own device before its short expiry.');
+ }catch{status('Clipboard unavailable; copy the displayed owner-only link manually.')}
+});
+$('emailPair').addEventListener('click',()=>{
+ if(!pairUrl||!connected)return;
+ const subject='Connect my device to LeeWay Creator Master';
+ const body='Open this short-lived one-use Creator device link on my own phone. The same Creator Zitadel sign-in and a new signed device passport are still required.\n\n'+pairUrl+
+ '\n\nDo not forward this pairing link to a customer.';
+ window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 });
 $('issueInvite').addEventListener('click',async()=>{
  if(!connected)return;
