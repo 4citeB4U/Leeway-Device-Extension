@@ -40,7 +40,8 @@ assert set(files)=={
 }
 artifacts = {}
 for browser, manifest_name in (
-    ('chromium', 'manifest.json'),
+    ('chrome', 'manifest.json'),
+    ('edge', 'manifest.json'),
     ('firefox', 'manifest.firefox.json')
 ):
     manifest_bytes = (source / manifest_name).read_bytes()
@@ -54,7 +55,7 @@ for browser, manifest_name in (
     assert 'nativeMessaging' in manifest['permissions']
     assert 'storage' not in manifest['permissions']
     assert 'content_scripts' not in manifest
-    if browser == 'chromium':
+    if browser in ('chrome', 'edge'):
         assert manifest['side_panel']['default_path'] == 'operating-system.html'
         assert 'sidePanel' in manifest['permissions']
         assert manifest['background']['service_worker'] == 'background.js'
@@ -80,7 +81,7 @@ for browser, manifest_name in (
         assert len(proof.namelist()) == len(files) + 1
     artifacts[name] = sha256(archive.read_bytes()).hexdigest()
 (dist / 'SHA256SUMS.json').write_text(
-    dumps({'classification': 'BLOCKED_SOURCE_ONLY_NATIVE_BRIDGE_NOT_LIVE_NOT_INSTALLABLE',
+    dumps({'classification': 'CHROME_EDGE_FIREFOX_SOURCE_BUILT__NATIVE_BRIDGE_ENROLLMENT_NOT_QUALIFIED',
            'artifacts': artifacts}, indent=2) + '\n', encoding='utf8'
 )
 for name, digest in artifacts.items():
