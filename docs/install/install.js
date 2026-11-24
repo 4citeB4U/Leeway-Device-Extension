@@ -57,7 +57,8 @@ LICENSE = Existing repository terms.
    if(!data||data.schema!=='leeway.extension.distribution.v1'||!Array.isArray(data.channels)||
       data.channels.length!==ids.length)return false;
    if(data.channels.some((c,i)=>!c||c.id!==ids[i]||typeof c.title!=='string'||
-     !Object.hasOwn(distributions,c.id)||!Object.hasOwn(publicationStatus,c.status)||
+     !Object.hasOwn(distributions,c.id)||c.distribution!==distributions[c.id]||
+     !Object.hasOwn(publicationStatus,c.status)||
      (c.status==='PUBLISHED'&&!officialStoreUrl(c))||
      (c.status!=='PUBLISHED'&&c.storeUrl!==null)))return false;
    return true;
