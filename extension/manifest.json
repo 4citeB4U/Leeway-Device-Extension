@@ -15,8 +15,6 @@
     }
   },
   "permissions": [
-    "activeTab",
-    "scripting",
     "nativeMessaging",
     "sidePanel"
   ],
