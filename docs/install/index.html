@@ -20,7 +20,9 @@ LICENSE = Existing repository terms; no new product license claimed.
  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
  <title>LeeWay Device Bridge — Official installation channels</title>
  <link rel="stylesheet" href="./install.css">
+ <script src="./setup-policy.js" defer></script>
  <script src="./install.js" defer></script>
+ <script src="./setup.js" defer></script>
 </head>
 <body>
  <header>
@@ -31,6 +33,24 @@ LICENSE = Existing repository terms; no new product license claimed.
   <p class="notice"><strong>Release status:</strong> <span id="overall">Checking official installation availability…</span></p>
  </header>
  <main>
+  <section id="guidedSetup" class="guided-setup" aria-labelledby="setupHeading">
+   <h2 id="setupHeading">Step 1 — Set up this device</h2>
+   <p id="detectedEnvironment" role="status">Checking this device and its current browser…</p>
+   <p class="hint">This is a browser hint, not trusted hardware identity. A website cannot discover every browser installed on your device. Choose any additional browsers you want; the signed native companion verifies the real device during owner enrollment.</p>
+   <form id="setupForm">
+    <fieldset>
+     <legend>Step 2 — Which browsers will you use with LeeWay on this device?</legend>
+     <div id="browserChoices" class="browser-choices"></div>
+    </fieldset>
+    <button id="reviewSetup" type="submit">Show installation steps</button>
+   </form>
+   <div id="setupResults" aria-live="polite" hidden>
+     <h3>Step 3 — Approved installation sequence</h3>
+     <p id="setupStatus" role="status"></p>
+     <ol id="setupActions" class="setup-actions"></ol>
+   </div>
+   <p class="hint">Extension installations require your explicit approval in each supported browser's official store. The approved OS-native Device Bridge must then register and authenticate the device; no website can silently install browser extensions, mint device passports, or copy Creator privileges.</p>
+  </section>
   <h2>Official installation channels</h2>
   <p>The links below appear only after an approved store release. No developer ZIP, static-token relay or public Tablet preview is substituted for an actual Device Bridge.</p>
   <div id="channels" class="channels" aria-live="polite"><p>Reading release catalog…</p></div>
