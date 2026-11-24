@@ -21,18 +21,28 @@ const DEFAULTS=Object.freeze({
   recoveryInfo:'https://github.com/4citeB4U/LeeWay-Continuum'
 });
 const OS_FAMILIES=Object.freeze(['Microsoft Windows','Linux','Apple','Android']);
+// This public customer edition is a MINIMAL CLIENT, not the Creator Golden Master.
+// No private model weights, Creator admin applications, issuing keys, employees,
+// Formula implementation, or full Tablet source are included in the bundle.
+const EDITION='CUSTOMER_STARTER';
 const APPS=Object.freeze([
-  Object.freeze({id:'tablet',name:'Full Tablet',symbol:'▣',access:'PUBLIC_LAUNCH',detail:'Existing hosted LeeWay Agent Virtual Tablet'}),
-  Object.freeze({id:'diagnostics',name:'Diagnostics',symbol:'◉',access:'PUBLIC_LAUNCH',detail:'Open the Tablet; device diagnostics require real host admission'}),
-  Object.freeze({id:'continuum',name:'Continuum',symbol:'↺',access:'PUBLIC_LAUNCH',detail:'Open Tablet continuity tools; backups not verified by this extension'}),
-  Object.freeze({id:'digital-brain',name:'Digital Brain',symbol:'◇',access:'PUBLIC_LAUNCH',detail:'Open the existing Tablet Digital Brain surface'}),
-  Object.freeze({id:'office',name:'Office',symbol:'▤',access:'PUBLIC_LAUNCH',detail:'Open existing Tablet Office applications'}),
-  Object.freeze({id:'blackboard',name:'Blackboard',symbol:'⌘',access:'PUBLIC_LAUNCH',detail:'Agent, user and team communication via existing Tablet'}),
-  Object.freeze({id:'model-hub',name:'Model Hub',symbol:'◈',access:'PUBLIC_LAUNCH',detail:'Open Tablet Model Hub; GPU inference not established here'}),
-  Object.freeze({id:'app-foundry',name:'App Foundry',symbol:'⊞',access:'PUBLIC_LAUNCH',detail:'Build personal applications in the existing Tablet'}),
-  Object.freeze({id:'employee-studio',name:'Local Employee Studio',symbol:'▥',access:'PUBLIC_LAUNCH',detail:'Local employee creation; remote dispatch not granted'}),
-  Object.freeze({id:'employee-export',name:'Employee Deployment',symbol:'⇧',access:'SERVER_LICENSE_REQUIRED',detail:'Creator-issued and runtime-verified outbound workforce license required'})
+ Object.freeze({id:'digital-brain',name:'Digital Brain',symbol:'◇',
+  access:'CUSTOMER_CORE_ENTRY',detail:'Your own consent-bound local file index'}),
+ Object.freeze({id:'continuum',name:'Continuum',symbol:'↺',
+  access:'CUSTOMER_CORE_ENTRY',detail:'Your own owner-scoped Continuum records and recovery'}),
+ Object.freeze({id:'diagnostics',name:'LeeWay Diagnostics',symbol:'◉',
+  access:'CUSTOMER_CORE_ENTRY',detail:'LeeWay diagnostic provider observing your approved device'}),
+ Object.freeze({id:'local-ai',name:'My Local AI',symbol:'◈',
+  access:'LOCAL_PROVIDER_ADMISSION_REQUIRED',
+  detail:'Optional user-chosen local AI; no Creator model or LeeWay cloud power bundled'})
 ]);
+const WITHHELD=new Set([
+ 'creator-console','creator.control','creator.license.issue','creator.license.revoke',
+ 'office','blackboard','model-hub','app-foundry','employee-studio','employee-export',
+ 'digital-employment-center','workforce.remote.export','workforce.remote.dispatch',
+ 'machine-consciousness','veritas-admin','formula-admin','receipt-authority-admin'
+]);
+
 function httpsUrl(input){
   if(typeof input!=='string'||input.length>2048)throw Error('HTTPS_RESOURCE_INVALID');
   let url;
@@ -76,9 +86,10 @@ function normalizeProfile(profile){
 // App availability here only controls presentation. Only canonical Runtime can
 // authenticate a user, issue/revoke a license or authorize the actual operation.
 function presentationGate(appId){
+  if(WITHHELD.has(appId))return 'NOT_IN_CUSTOMER_PACKAGE';
   const app=APPS.find(item=>item.id===appId);
   if(!app)return 'UNKNOWN_APP_DENIED';
-  return app.access==='PUBLIC_LAUNCH'?'OPEN_PUBLIC_TABLET_ONLY':'LOCKED_RUNTIME_LICENSE_REQUIRED';
+  return app.access;
 }
 function safeShortcuts(value){
   if(!Array.isArray(value))return [];
@@ -96,7 +107,7 @@ function safeShortcuts(value){
   return result;
 }
 scope.LeeWayOperatingPolicy=Object.freeze({
-  version,DEFAULTS,OS_FAMILIES,APPS,httpsUrl,bridgeHealthUrl,
+  version,EDITION,DEFAULTS,OS_FAMILIES,APPS,httpsUrl,bridgeHealthUrl,
   parseGitHubRepo,normalizeProfile,presentationGate,safeShortcuts
 });
 })(globalThis);
