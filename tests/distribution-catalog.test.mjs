@@ -97,7 +97,7 @@ test('installation directory never directly packages Desktop/Creator private com
  assert.match(html,/Agent Lee/);
  assert.match(html,/id="setupForm"/);
  assert.match(html,/id="browserChoices"/);
- assert.match(setup,/planSetup/);
+ assert.match(setup,/planOnboarding/);
  assert.match(source,/ANDROID_CHROME_NO_DESKTOP_EXTENSION/);
  assert.match(html,/Digital Brain/);
  assert.match(html,/separate passport/);
