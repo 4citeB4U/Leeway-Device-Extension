@@ -14,8 +14,10 @@ LICENSE: Existing repository terms apply.
 (function (scope) {
   'use strict';
   if (!scope.LeeWayExtension && typeof importScripts === 'function') importScripts('browser-polyfill.js');
+  if (!scope.LeeWayBridgeSessionContract && typeof importScripts === 'function') importScripts('bridge-session-contract.js');
   const B = scope.LeeWayExtension;
-  if (!B?.api) return;
+  const Bridge = scope.LeeWayBridgeSessionContract;
+  if (!B?.api || !Bridge?.verifySnapshot) return;
   let port = null;
   let sessionId = null;
   let connectPromise = null;
@@ -23,18 +25,24 @@ LICENSE: Existing repository terms apply.
   let handshakeTimer = null;
   let failHandshake = null;
   const pending = new Map();
+  const bridgePending = new Map();
+  let bridgeSnapshot = null;
 
   const status = () => ({
     connected: Boolean(port && sessionId),
     host: B.HOST,
     authority: 'NATIVE_HOST_ONLY',
-    execution: 'NOT_ASSERTED'
+    execution: 'NOT_ASSERTED',
+    bridgeQualified: Boolean(port && sessionId && bridgeSnapshot),
+    deviceCount: bridgeSnapshot?.devices?.length || 0,
+    bridgeState: bridgeSnapshot ? 'NATIVE_BRIDGE_RUNTIME_SNAPSHOT_REPORTED' : 'BRIDGE_READBACK_REQUIRED'
   });
 
   function reset(reason = 'NATIVE_HOST_DISCONNECTED') {
     const oldPort = port;
     port = null;
     sessionId = null;
+    bridgeSnapshot = null;
     handshakeId = null;
     if (handshakeTimer) clearTimeout(handshakeTimer);
     handshakeTimer = null;
@@ -47,6 +55,11 @@ LICENSE: Existing repository terms apply.
       item.reject(new Error(reason));
     }
     pending.clear();
+    for (const item of bridgePending.values()) {
+      clearTimeout(item.timer);
+      item.reject(new Error(reason));
+    }
+    bridgePending.clear();
     try { oldPort?.disconnect(); } catch { /* No authority inferred from disconnect. */ }
   }
 
@@ -96,6 +109,24 @@ LICENSE: Existing repository terms apply.
           resolve(status());
           return;
         }
+        if (message?.type === 'leeway.extension.bridge-snapshot') {
+          const entry = bridgePending.get(message?.requestId);
+          if (!entry) return;
+          bridgePending.delete(message.requestId);
+          clearTimeout(entry.timer);
+          try {
+            const snapshot = Bridge.verifySnapshot(message, {
+              requestId: entry.requestId, sessionId: entry.sessionId
+            });
+            if (port !== candidate || sessionId !== entry.sessionId) throw Error('NATIVE_SESSION_CHANGED');
+            bridgeSnapshot = snapshot;
+            entry.resolve(snapshot);
+          } catch (error) {
+            bridgeSnapshot = null;
+            entry.reject(error);
+          }
+          return;
+        }
         const item = pending.get(message?.requestId);
         if (!item || message?.type !== 'leeway.extension.receipt' ||
           message.sessionId !== sessionId) return;
@@ -129,6 +160,35 @@ LICENSE: Existing repository terms apply.
       () => { if (connectPromise === thisAttempt) connectPromise = null; }
     );
     return thisAttempt;
+  }
+
+  async function readBridgeSnapshot() {
+    await connect();
+    if (!port || !sessionId) throw Error('NATIVE_HOST_NOT_AUTHENTICATED');
+    const requestId = crypto.randomUUID();
+    const candidate = port;
+    const currentSession = sessionId;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        bridgePending.delete(requestId);
+        bridgeSnapshot = null;
+        reject(Error('BRIDGE_RUNTIME_READBACK_TIMEOUT'));
+      }, 10000);
+      bridgePending.set(requestId, {requestId,sessionId:currentSession,resolve,reject,timer});
+      try {
+        candidate.postMessage({
+          type:'leeway.extension.bridge-snapshot-request',
+          version:B.VERSION,requestId,sessionId:currentSession,
+          requestedCapabilities:[...Bridge.SESSION_CAPABILITIES]
+        });
+      } catch {
+        bridgePending.delete(requestId);
+        clearTimeout(timer);
+        bridgeSnapshot = null;
+        reject(Error('BRIDGE_RUNTIME_READBACK_SEND_FAILED'));
+        if (port === candidate) reset('NATIVE_HOST_TRANSPORT_FAILURE');
+      }
+    });
   }
 
   function share(payload) {
@@ -168,7 +228,7 @@ LICENSE: Existing repository terms apply.
     // it cannot submit content excerpts without a selected HTTP(S) page.
     const panelUrl = B.api.runtime.getURL?.('operating-system.html');
     if (panelUrl && sender?.url === panelUrl &&
-      ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_DISCONNECT','LEEWAY_OPEN_COURIER'].includes(request?.type))
+      ['LEEWAY_STATUS','LEEWAY_CONNECT','LEEWAY_BRIDGE_SNAPSHOT','LEEWAY_DISCONNECT','LEEWAY_OPEN_COURIER'].includes(request?.type))
       return true;
     if (!B.allowedPage(sender?.tab?.url)) return false;
     try {
@@ -194,6 +254,8 @@ LICENSE: Existing repository terms apply.
       ? Promise.resolve(status())
       : request.type === 'LEEWAY_CONNECT'
         ? connect()
+        : request.type === 'LEEWAY_BRIDGE_SNAPSHOT'
+          ? readBridgeSnapshot()
         : request.type === 'LEEWAY_DISCONNECT'
           ? Promise.resolve().then(() => { reset(); return status(); })
           : request.type === 'LEEWAY_SHARE_SELECTION'
