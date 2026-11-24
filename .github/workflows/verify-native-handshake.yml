@@ -54,14 +54,15 @@ jobs:
           node --check tests/creator-join-source.test.mjs
       - name: Source negative tests
         run: npm test
-      - name: Deterministic unsigned Chrome and Firefox source packages
+      - name: Deterministic Chromium Chrome, Edge and Firefox source packages
         run: python3 scripts/package-extension.py
       - name: Upload blocked source candidates (NOT installable until native Bridge admission)
         uses: actions/upload-artifact@v4
         with:
           name: leeway-device-bridge-BLOCKED-source
           path: |
-            dist/leeway-device-bridge-chromium-BLOCKED-NOT-INSTALLABLE.zip
+            dist/leeway-device-bridge-chrome-BLOCKED-NOT-INSTALLABLE.zip
+            dist/leeway-device-bridge-edge-BLOCKED-NOT-INSTALLABLE.zip
             dist/leeway-device-bridge-firefox-BLOCKED-NOT-INSTALLABLE.zip
             dist/SHA256SUMS.json
           if-no-files-found: error
