@@ -25,9 +25,14 @@ const P=sandbox.LeeWayOperatingPolicy;
 test('portable four-OS catalog and cloud-first unbound launcher',()=>{
  assert.equal(P.version,'0.4.0');
  assert.deepEqual([...P.OS_FAMILIES],['Microsoft Windows','Linux','Apple','Android']);
- assert.equal(P.DEFAULTS.tabletUrl,'https://4citeb4u.github.io/Leeway-Agent-Virtual-Tablet/');
- assert.equal(P.DEFAULTS.bridgeHealthUrl,'https://leeway-native-device-bridge.onrender.com/healthz');
+ assert.equal(P.DEFAULTS.tabletUrl,null);
+ assert.equal(P.DEFAULTS.bridgeHealthUrl,null);
+ assert.equal(P.DEFAULTS.githubRepo,null);
  assert.equal(P.EDITION,'CUSTOMER_STARTER');
+ const fresh=P.normalizeProfile({});
+ assert.equal(fresh.githubRepo,null);
+ assert.equal(fresh.tabletUrl,null);
+ assert.equal(fresh.bridgeHealthUrl,null);
  assert.deepEqual(Array.from(P.APPS,x=>x.id),
   ['digital-brain','continuum','diagnostics','local-ai']);
  assert.equal(P.APPS.some(app=>app.id==='employee-export'),false);
