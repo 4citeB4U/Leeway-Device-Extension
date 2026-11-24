@@ -21,6 +21,7 @@ LICENSE = Existing repository terms; no new product license claimed.
  <title>LeeWay Device Bridge — Official installation channels</title>
  <link rel="stylesheet" href="./install.css">
  <script src="./setup-policy.js" defer></script>
+ <script src="./onboarding-policy.js" defer></script>
  <script src="./install.js" defer></script>
  <script src="./setup.js" defer></script>
 </head>
@@ -34,18 +35,65 @@ LICENSE = Existing repository terms; no new product license claimed.
  </header>
  <main>
   <section id="guidedSetup" class="guided-setup" aria-labelledby="setupHeading">
-   <h2 id="setupHeading">Step 1 — Set up this device</h2>
+   <h2 id="setupHeading">Set up LeeWay Device Bridge</h2>
    <p id="detectedEnvironment" role="status">Checking this device and its current browser…</p>
    <p class="hint">This is a browser hint, not trusted hardware identity. A website cannot discover every browser installed on your device. Choose any additional browsers you want; the signed native companion verifies the real device during owner enrollment.</p>
    <form id="setupForm">
     <fieldset>
-     <legend>Step 2 — Which browsers will you use with LeeWay on this device?</legend>
+     <legend>1. What kind of device is this?</legend>
+     <label class="onboarding-label" for="deviceForm">Device shape</label>
+     <select id="deviceForm" name="deviceForm" required>
+      <option value="desktop">Desktop or laptop</option>
+      <option value="phone">Phone</option>
+      <option value="tablet">Tablet</option>
+      <option value="foldable">Foldable Android device</option>
+     </select>
+     <div id="linuxVariantWrap" hidden>
+      <label class="onboarding-label" for="linuxVariant">Linux distribution (including China-developed desktop systems)</label>
+      <select id="linuxVariant">
+       <option value="unspecified">Linux — detect exact distribution after installation</option>
+       <option value="deepin">deepin</option>
+       <option value="uos">UOS / UnionTech</option>
+       <option value="openkylin">openKylin</option>
+       <option value="kylin">Kylin</option>
+       <option value="openeuler">openEuler</option>
+       <option value="other-linux">Other Linux distribution</option>
+      </select>
+     </div>
+     <p class="hint">The original native Bridge verifies the actual hardware, OS version, architecture and installer compatibility after user approval. Browser guesses never identify a trusted device.</p>
+    </fieldset>
+    <fieldset>
+     <legend>2. Is this the first device you are setting up, or an additional device?</legend>
+     <div class="browser-choices">
+      <label class="browser-choice"><input type="radio" name="deviceRelation" value="first" checked> First-time setup for this device</label>
+      <label class="browser-choice"><input type="radio" name="deviceRelation" value="additional"> Add another device to my existing workspace</label>
+     </div>
+     <p class="hint">The same steps are available to the Creator and every customer. Your authorized role comes from LeeWay sign-in—not from this selection.</p>
+    </fieldset>
+    <fieldset>
+     <legend>3. Do you already have a LeeWay account?</legend>
+     <div class="browser-choices">
+      <label class="browser-choice"><input type="radio" name="accountChoice" value="existing" required> Yes — sign in</label>
+      <label class="browser-choice"><input type="radio" name="accountChoice" value="new" required> No — create an account</label>
+     </div>
+     <p class="hint">Account creation and login use the original Zitadel-backed LeeWay identity. This GitHub Pages form does not collect passwords, recovery phrases, OTPs or access tokens.</p>
+    </fieldset>
+    <fieldset>
+     <legend>4. Do you already have a GitHub account?</legend>
+     <div class="browser-choices">
+      <label class="browser-choice"><input type="radio" name="githubChoice" value="yes" required> Yes — connect my existing account</label>
+      <label class="browser-choice"><input type="radio" name="githubChoice" value="no" required> No — help me create one</label>
+     </div>
+     <p id="githubHelp" class="hint" aria-live="polite">GitHub supports LeeWay app building and repository workflows; it is not a substitute for LeeWay device authentication.</p>
+    </fieldset>
+    <fieldset>
+     <legend>5. Which browsers will you use with LeeWay?</legend>
      <div id="browserChoices" class="browser-choices"></div>
     </fieldset>
-    <button id="reviewSetup" type="submit">Show installation steps</button>
+    <button id="reviewSetup" type="submit">Review my secure setup</button>
    </form>
    <div id="setupResults" aria-live="polite" hidden>
-     <h3>Step 3 — Approved installation sequence</h3>
+     <h3>6. Your account, device and browser setup sequence</h3>
      <p id="setupStatus" role="status"></p>
      <ol id="setupActions" class="setup-actions"></ol>
    </div>
